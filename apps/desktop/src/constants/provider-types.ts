@@ -1,7 +1,6 @@
 import { REMOTE_PROVIDERS, type RemoteProvider } from "./remote-providers";
 
 export const PROVIDER_TYPES = {
-  amical: "amical",
   sayd: "sayd",
   localWhisper: "local-whisper",
   openRouter: "openrouter",
@@ -12,7 +11,6 @@ export const PROVIDER_TYPES = {
 export type ProviderType = (typeof PROVIDER_TYPES)[keyof typeof PROVIDER_TYPES];
 
 export const SYSTEM_PROVIDER_INSTANCE_IDS = {
-  amical: "system-amical",
   sayd: "system-sayd",
   localWhisper: "system-local-whisper",
   openRouter: "system-openrouter",
@@ -37,8 +35,6 @@ export function getSystemProviderInstanceId(
   providerType: ProviderType,
 ): string {
   switch (providerType) {
-    case PROVIDER_TYPES.amical:
-      return SYSTEM_PROVIDER_INSTANCE_IDS.amical;
     case PROVIDER_TYPES.sayd:
       return SYSTEM_PROVIDER_INSTANCE_IDS.sayd;
     case PROVIDER_TYPES.localWhisper:
@@ -54,8 +50,6 @@ export function getSystemProviderInstanceId(
 
 export function getProviderDisplayName(providerType: ProviderType): string {
   switch (providerType) {
-    case PROVIDER_TYPES.amical:
-      return "Amical";
     case PROVIDER_TYPES.sayd:
       return "Sayd";
     case PROVIDER_TYPES.localWhisper:

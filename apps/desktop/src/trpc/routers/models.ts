@@ -91,14 +91,9 @@ export const modelsRouter = createRouter({
         const availableModels = modelService.getAvailableModels();
         const downloadedModels = await modelService.getDownloadedModels();
 
-        // Check authentication status for cloud model filtering
-        const authService = ctx.serviceManager.getService("authService");
-        const isAuthenticated = await authService.isAuthenticated();
-
         // Map available models to Model format using downloaded data if available
         const getProviderTypeForModel = (modelId: string) => {
           if (modelId === "sayd-cloud") return PROVIDER_TYPES.sayd;
-          if (modelId === "amical-cloud") return PROVIDER_TYPES.amical;
           return PROVIDER_TYPES.localWhisper;
         };
         const getProviderInstanceIdForModel = (modelId: string) =>
@@ -152,10 +147,6 @@ export const modelsRouter = createRouter({
             const model = m as Model & { setup: "offline" | "cloud" };
             if (model.provider === "Sayd") {
               return isSaydConfigured;
-            }
-            // Filter other cloud models if not authenticated
-            if (model.setup === "cloud") {
-              return isAuthenticated;
             }
             // Filter local models that aren't downloaded
             return model.downloadedAt !== null;

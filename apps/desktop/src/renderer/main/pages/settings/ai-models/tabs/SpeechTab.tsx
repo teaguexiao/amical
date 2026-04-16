@@ -20,7 +20,6 @@ import {
   Square,
   Loader2,
   Trash2,
-  LogIn,
   Cloud,
   Key,
 } from "lucide-react";
@@ -122,12 +121,8 @@ export default function SpeechTab() {
   >({});
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [modelToDelete, setModelToDelete] = useState<string | null>(null);
-  const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [pendingCloudModel, setPendingCloudModel] = useState<string | null>(
     null,
-  );
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(
-    undefined,
   );
   const [showSaydApiKeyDialog, setShowSaydApiKeyDialog] = useState(false);
   const [saydApiKeyInput, setSaydApiKeyInput] = useState("");
@@ -180,26 +175,12 @@ export default function SpeechTab() {
   });
 
   const setSelectedModelMutation = api.models.setSelectedModel.useMutation({
-    onSuccess: (_data, variables) => {
+    onSuccess: () => {
       utils.models.getSelectedModel.invalidate();
-      if (variables.modelId === "amical-cloud") {
-        toast.success(t("settings.aiModels.speech.toast.cloudSelected"));
-      }
     },
     onError: (error) => {
       console.error("Failed to select model:", error);
       toast.error(t("settings.aiModels.speech.toast.selectFailed"));
-    },
-  });
-
-  // Auth mutations
-  const loginMutation = api.auth.login.useMutation({
-    onSuccess: () => {
-      toast.info(t("settings.aiModels.speech.toast.loginInBrowser"));
-    },
-    onError: (error) => {
-      console.error("Failed to initiate login:", error);
-      toast.error(t("settings.aiModels.speech.toast.loginStartFailed"));
     },
   });
 
@@ -337,22 +318,6 @@ export default function SpeechTab() {
     },
   });
 
-  // Auth state subscription - update auth state and handle pending cloud model selection
-  api.auth.onAuthStateChange.useSubscription(undefined, {
-    onData: (authState) => {
-      setIsAuthenticated(authState.isAuthenticated);
-
-      if (authState.isAuthenticated && pendingCloudModel) {
-        toast.success(t("settings.aiModels.speech.toast.loginSuccess"));
-        setSelectedModelMutation.mutate({ modelId: pendingCloudModel });
-        setPendingCloudModel(null);
-      }
-    },
-    onError: (error) => {
-      console.error("Auth state subscription error:", error);
-    },
-  });
-
   const handleDownload = async (modelId: string, event?: React.MouseEvent) => {
     if (event) {
       event.preventDefault();
@@ -412,17 +377,8 @@ export default function SpeechTab() {
   };
 
   const handleSelectModel = async (modelId: string) => {
-    // Check if this is a cloud model
     const model = availableModels.find((m) => m.id === modelId);
-    const isCloudModel = model?.provider === "Amical Cloud";
     const isSaydModel = model?.provider === "Sayd";
-
-    // If cloud model and not authenticated, show login dialog
-    if (isCloudModel && !isAuthenticated) {
-      setPendingCloudModel(modelId);
-      setShowLoginDialog(true);
-      return;
-    }
 
     // If Sayd model and not configured, show API key dialog
     if (isSaydModel && !isSaydConfigured) {
@@ -435,19 +391,6 @@ export default function SpeechTab() {
       await setSelectedModelMutation.mutateAsync({ modelId });
     } catch (err) {
       console.error("Failed to select model:", err);
-      // Error is already handled by the mutation's onError
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      await loginMutation.mutateAsync();
-      setShowLoginDialog(false);
-      toast.info(t("settings.aiModels.speech.toast.loginInBrowser"));
-      // Auth state subscription will handle the rest when login completes
-    } catch (err) {
-      console.error("Failed to login:", err);
-      toast.error(t("settings.aiModels.speech.toast.loginStartFailed"));
     }
   };
 
@@ -515,15 +458,12 @@ export default function SpeechTab() {
                         const progress = downloadProgress[model.id];
                         const isDownloading =
                           progress?.status === "downloading";
-                        const isCloudModel = model.provider === "Amical Cloud";
                         const isSaydModel = model.provider === "Sayd";
 
-                        // Cloud models can be selected if authenticated/configured, local models need to be downloaded
-                        const canSelect = isCloudModel
-                          ? (isAuthenticated ?? false)
-                          : isSaydModel
-                            ? isSaydConfigured
-                            : isDownloaded && isTranscriptionAvailable;
+                        // Sayd models can be selected if API key configured, local models need to be downloaded
+                        const canSelect = isSaydModel
+                          ? isSaydConfigured
+                          : isDownloaded && isTranscriptionAvailable;
 
                         return (
                           <TableRow
@@ -562,7 +502,7 @@ export default function SpeechTab() {
                                     </Avatar>
                                     <span>{model.provider}</span>
                                   </div>
-                                  {(isCloudModel || isSaydModel) && (
+                                  {isSaydModel && (
                                     <div className="mt-1">
                                       <Tooltip>
                                         <TooltipTrigger asChild>
@@ -619,27 +559,6 @@ export default function SpeechTab() {
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-col items-center space-y-1">
-                                {/* Cloud models show cloud icon or login button */}
-                                {isCloudModel && (
-                                  <>
-                                    {isAuthenticated ? (
-                                      <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                        <Cloud className="w-4 h-4 text-blue-500" />
-                                      </div>
-                                    ) : (
-                                      <button
-                                        onClick={() => setShowLoginDialog(true)}
-                                        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white transition-colors"
-                                        title={t(
-                                          "settings.aiModels.speech.cloudFormatting.signInTitle",
-                                        )}
-                                      >
-                                        <LogIn className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                  </>
-                                )}
-
                                 {/* Sayd models show key icon or configure button */}
                                 {isSaydModel && (
                                   <>
@@ -664,8 +583,7 @@ export default function SpeechTab() {
                                 )}
 
                                 {/* Local models show download/delete buttons */}
-                                {!isCloudModel &&
-                                  !isSaydModel &&
+                                {!isSaydModel &&
                                   !isDownloaded &&
                                   !isDownloading && (
                                     <button
@@ -681,8 +599,7 @@ export default function SpeechTab() {
                                     </button>
                                   )}
 
-                                {!isCloudModel &&
-                                  !isSaydModel &&
+                                {!isSaydModel &&
                                   !isDownloaded &&
                                   isDownloading && (
                                     <div className="relative">
@@ -735,7 +652,7 @@ export default function SpeechTab() {
                                     </div>
                                   )}
 
-                                {!isCloudModel && !isSaydModel && isDownloaded && (
+                                {!isSaydModel && isDownloaded && (
                                   <button
                                     type="button"
                                     onClick={(e) =>
@@ -794,48 +711,6 @@ export default function SpeechTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("settings.aiModels.speech.loginDialog.title")}
-            </DialogTitle>
-            <DialogDescription>
-              {t("settings.aiModels.speech.loginDialog.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <p className="text-sm text-muted-foreground">
-              {t("settings.aiModels.speech.loginDialog.browserNotice")}
-            </p>
-            <div className="flex items-center space-x-2 text-sm">
-              <Cloud className="w-4 h-4 text-blue-500" />
-              <span>
-                {t("settings.aiModels.speech.loginDialog.cloudBenefit")}
-              </span>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowLoginDialog(false)}>
-              {t("settings.aiModels.speech.loginDialog.cancel")}
-            </Button>
-            <Button onClick={handleLogin} disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {t("settings.aiModels.speech.loginDialog.openingBrowser")}
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4 mr-2" />
-                  {t("settings.aiModels.speech.loginDialog.signIn")}
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Dialog
         open={showSaydApiKeyDialog}

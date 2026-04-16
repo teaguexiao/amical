@@ -8,8 +8,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Download, AlertCircle, Check } from "lucide-react";
+import { Loader2, Download, AlertCircle, Check, ExternalLink } from "lucide-react";
 import { api } from "@/trpc/react";
 import { ModelType } from "../../../../types/onboarding";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ interface ModelSetupModalProps {
 
 /**
  * Modal for setting up model-specific requirements
- * Cloud: OAuth authentication
+ * Cloud: Sayd API key configuration
  * Local: Model download
  */
 export function ModelSetupModal({
@@ -45,6 +46,7 @@ export function ModelSetupModal({
   const [modelAlreadyInstalled, setModelAlreadyInstalled] = useState(false);
   const [installedModelName, setInstalledModelName] = useState<string>("");
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState("");
 
   // Get recommended local model based on hardware
   const { data: recommendedModelId = "whisper-base" } =
@@ -53,33 +55,9 @@ export function ModelSetupModal({
     });
 
   // tRPC mutations
-  const loginMutation = api.auth.login.useMutation({
-    onSuccess: () => {
-      // Browser opened, waiting for OAuth completion via subscription
-      toast.info(t("onboarding.modelSetup.toast.loginInBrowser"));
-    },
-    onError: (err) => {
-      console.error("OAuth error:", err);
-      setError(t("onboarding.modelSetup.cloud.error.loginStartFailed"));
-      setIsLoading(false);
-    },
-  });
+  const validateSaydMutation = api.models.validateSaydConnection.useMutation();
+  const setSaydConfigMutation = api.settings.setSaydConfig.useMutation();
   const downloadModelMutation = api.models.downloadModel.useMutation();
-
-  // Subscribe to auth state changes for Cloud model OAuth completion
-  api.auth.onAuthStateChange.useSubscription(undefined, {
-    onData: (authState) => {
-      if (authState.isAuthenticated && isLoading) {
-        toast.success(t("onboarding.modelSetup.toast.authenticated"));
-        setIsLoading(false);
-        onContinue();
-      }
-    },
-    onError: (error) => {
-      console.error("Auth state subscription error:", error);
-    },
-    enabled: modelType === ModelType.Cloud && isOpen,
-  });
 
   // Check for existing downloaded models
   const { data: downloadedModels } = api.models.getDownloadedModels.useQuery(
@@ -108,13 +86,40 @@ export function ModelSetupModal({
     enabled: modelType === ModelType.Local && isOpen,
   });
 
-  // Handle Amical authentication
-  const handleAmicalLogin = async () => {
+  // Handle Sayd API key validation and save
+  const handleSaydSetup = async () => {
+    if (!apiKeyInput.trim()) {
+      setError(t("onboarding.modelSetup.cloud.error.apiKeyRequired"));
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
-    // The login mutation triggers Amical OAuth flow via the main process
-    loginMutation.mutate();
+    try {
+      const result = await validateSaydMutation.mutateAsync({
+        apiKey: apiKeyInput.trim(),
+      });
+
+      if (!result.success) {
+        setError(result.error || t("onboarding.modelSetup.cloud.error.invalidApiKey"));
+        setIsLoading(false);
+        return;
+      }
+
+      // Save API key
+      await setSaydConfigMutation.mutateAsync({
+        apiKey: apiKeyInput.trim(),
+      });
+
+      toast.success(t("onboarding.modelSetup.cloud.success"));
+      setIsLoading(false);
+      onContinue();
+    } catch (err) {
+      console.error("Sayd setup error:", err);
+      setError(t("onboarding.modelSetup.cloud.error.connectionFailed"));
+      setIsLoading(false);
+    }
   };
 
   // Handle model download
@@ -175,13 +180,44 @@ export function ModelSetupModal({
             </DialogDescription>
           </DialogHeader>
 
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="sk-..."
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSaydSetup()}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("onboarding.modelSetup.cloud.getApiKey")}{" "}
+                <a
+                  href="https://sayd.dev/signup"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  sayd.dev
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </p>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                {error}
+              </div>
+            )}
+          </div>
+
           <DialogFooter className="space-x-2">
             <Button variant="outline" onClick={() => onClose(false)}>
               {t("onboarding.modelSetup.actions.cancel")}
             </Button>
-            <Button onClick={handleAmicalLogin} disabled={isLoading}>
+            <Button onClick={handleSaydSetup} disabled={isLoading || !apiKeyInput.trim()}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("onboarding.modelSetup.actions.signIn")}
+              {t("onboarding.navigation.continue")}
             </Button>
           </DialogFooter>
         </>

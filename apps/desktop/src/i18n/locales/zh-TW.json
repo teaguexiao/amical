@@ -1,6 +1,6 @@
 {
   "app": {
-    "loading": "載入 Amical 中..."
+    "loading": "載入 Sayd 中..."
   },
   "errors": {
     "generic": "發生錯誤，請再試一次。"
@@ -19,7 +19,7 @@
     "version": "版本 {{version}}"
   },
   "tray": {
-    "tooltip": "Amical",
+    "tooltip": "Sayd",
     "openConsole": "開啟主控台",
     "about": "關於",
     "quit": "結束"
@@ -64,7 +64,7 @@
       "supportNote": "如果問題持續發生，請聯絡支援團隊或查看說明文件。"
     },
     "welcome": {
-      "title": "歡迎使用 Amical",
+      "title": "歡迎使用 Sayd",
       "subtitle": "選擇您感興趣的功能，打造個人化體驗",
       "skip": "略過引導程序",
       "comingSoon": "即將推出",
@@ -99,7 +99,7 @@
     },
     "permissions": {
       "title": "權限設定",
-      "subtitle": "Amical 需要一些權限才能正常運作",
+      "subtitle": "Sayd 需要一些權限才能正常運作",
       "waiting": "正在等待授權...",
       "polling": "正在檢查權限變更...",
       "allGranted": {
@@ -125,11 +125,11 @@
       "accessibility": {
         "title": "輔助使用存取",
         "description": "貼上轉錄內容和全域鍵盤捷徑需要此權限（僅限 macOS）",
-        "deniedHelp": "請在系統設定的輔助使用中新增 Amical"
+        "deniedHelp": "請在系統設定的輔助使用中新增 Sayd"
       }
     },
     "discovery": {
-      "title": "您是怎麼發現 Amical 的？",
+      "title": "您是怎麼發現 Sayd 的？",
       "subtitle": "這有助於我們了解使用者的來源",
       "sources": {
         "searchEngine": "搜尋引擎 (Google、Bing 等)",
@@ -141,7 +141,7 @@
         "other": "其他"
       },
       "toast": {
-        "selectSource": "請選擇您如何發現 Amical",
+        "selectSource": "請選擇您如何發現 Sayd",
         "otherDetailsRequired": "請為「其他」提供詳細資訊"
       },
       "other": {
@@ -152,7 +152,7 @@
     },
     "modelSelection": {
       "title": "選擇您的 AI 模型",
-      "subtitle": "選擇希望 Amical 如何處理您的音訊",
+      "subtitle": "選擇希望 Sayd 如何處理您的音訊",
       "completeSetupToContinue": "完成設定以繼續",
       "recommended": "推薦",
       "prosLabel": "優點：",
@@ -168,17 +168,17 @@
       },
       "models": {
         "cloud": {
-          "title": "Amical 雲端模型",
-          "subtitle": "快速、高準確度且免費 - 無需設定",
+          "title": "Sayd 雲端",
+          "subtitle": "快速、高準確度的雲端轉錄，使用 API 金鑰",
           "description": "如果您希望獲得最佳準確率，或者您的設備無法運行本機模型，這是理想的選擇。\n安全的處理過程；音訊永遠不會被儲存。",
           "pros": {
             "free": "免費",
             "fast": "快速",
             "accurate": "更高準確度",
-            "noSetup": "無需設定"
+            "noSetup": "輕鬆設定"
           },
           "cons": {
-            "internetLogin": "需要穩定的網路及登入"
+            "internetLogin": "需要網路和 API 金鑰"
           }
         },
         "local": {
@@ -206,9 +206,14 @@
         "retry": "重試"
       },
       "cloud": {
-        "title": "需要登入",
-        "description": "雲端轉錄功能需要驗證身分才能繼續。",
+        "title": "Sayd 雲端 API 金鑰",
+        "description": "輸入您的 Sayd API 金鑰以啟用雲端轉錄。",
+        "getApiKey": "在此取得您的 API 金鑰",
+        "success": "已成功連接 Sayd 雲端！",
         "error": {
+          "apiKeyRequired": "請輸入您的 API 金鑰。",
+          "invalidApiKey": "API 金鑰無效，請檢查後重試。",
+          "connectionFailed": "無法連接到 Sayd 雲端，請重試。",
           "loginStartFailed": "登入開啟失敗，請再試一次。"
         }
       },
@@ -227,7 +232,7 @@
     },
     "completion": {
       "title": "設定完成！",
-      "start": "開始使用 Amical",
+      "start": "開始使用 Sayd",
       "quickConfig": {
         "title": "快速設定"
       },
@@ -260,7 +265,7 @@
         "noAudio": "「{{microphone}}」沒有音訊",
         "emptyTranscript": "「{{microphone}}」未偵測到語音",
         "transcriptionFailed": "轉錄過程中發生錯誤",
-        "recordingDurationWarning": "Amical 支援最長 {{maxMinutes}} 分鐘的連續聽寫，如有需要請開始新的聽寫。",
+        "recordingDurationWarning": "Sayd 支援最長 {{maxMinutes}} 分鐘的連續聽寫，如有需要請開始新的聽寫。",
         "recordingAutoStopped": "達到聽寫時間上限，如有需要請開始新的聽寫。"
       },
       "action": {
@@ -283,7 +288,7 @@
         },
         "recordingDurationWarning": {
           "title": "聽寫將在 {{minutes}} 分鐘後自動停止",
-          "description": "Amical 支援最長 {{maxMinutes}} 分鐘的連續聽寫，如有需要請開始新的聽寫。"
+          "description": "Sayd 支援最長 {{maxMinutes}} 分鐘的連續聽寫，如有需要請開始新的聽寫。"
         },
         "recordingAutoStopped": {
           "title": "聽寫已自動停止",
@@ -366,15 +371,15 @@
       },
       "about": {
         "title": "關於",
-        "description": "關於 Amical 和版本資訊"
+        "description": "關於 Sayd 和版本資訊"
       }
     },
     "sidebar": {
       "docs": "說明文件",
       "community": "社群",
       "discordAlt": "Discord",
-      "logoAlt": "Amical 標誌",
-      "brand": "Amical"
+      "logoAlt": "Sayd 標誌",
+      "brand": "Sayd"
     },
     "search": {
       "buttonLabel": "搜尋",
@@ -427,7 +432,7 @@
         },
         "restartDialog": {
           "title": "需要重啟",
-          "description": "請重新啟動 Amical 以套用語言變更，也可選擇下次啟動時再套用。",
+          "description": "請重新啟動 Sayd 以套用語言變更，也可選擇下次啟動時再套用。",
           "restartNow": "立即重啟",
           "later": "下次啟動時套用"
         },
@@ -472,7 +477,7 @@
       },
       "telemetry": {
         "label": "匿名遙測資料回傳",
-        "description": "分享匿名使用資料，幫助我們改進 Amical。",
+        "description": "分享匿名使用資料，幫助我們改進 Sayd。",
         "learnMore": "了解更多"
       },
       "dataLocation": {
@@ -642,22 +647,22 @@
         "label": "格式化",
         "badge": "Alpha 測試",
         "description": "為您的轉錄內容加入標點符號與結構。",
-        "cloudOptionLabel": "Amical 雲端 (Amical)",
-        "disabledTooltip": "同步語言模型或選擇 Amical 雲端轉錄以啟用格式化。",
+        "cloudOptionLabel": "Sayd 雲端",
+        "disabledTooltip": "同步語言模型或選擇 Sayd 雲端轉錄以啟用格式化。",
         "disabledReason": {
-          "cloudAndSignIn": "需要 Amical 雲端轉錄並登入",
-          "cloud": "需要 Amical 雲端轉錄",
-          "signIn": "需要登入"
+          "cloudAndSignIn": "需要 Sayd 雲端轉錄和 API 金鑰",
+          "cloud": "需要 Sayd 雲端轉錄",
+          "signIn": "需要 API 金鑰"
         },
         "manageLanguageModels": "管理語言模型",
         "modelLabel": "格式化模型",
         "modelDescription": "選擇用於格式化轉錄內容的模型。",
         "modelPlaceholder": "選擇一個模型...",
-        "requiresCloudSpeech": "需要 Amical 雲端轉錄。",
+        "requiresCloudSpeech": "需要 Sayd 雲端轉錄。",
         "switchSpeechModel": "切換語音模型",
-        "signInCloud": "登入以使用 Amical 雲端格式化。",
-        "signIn": "登入",
-        "cloudReady": "正在使用 Amical 雲端格式化。",
+        "signInCloud": "新增 API 金鑰以使用 Sayd 雲端格式化。",
+        "signIn": "新增 API 金鑰",
+        "cloudReady": "正在使用 Sayd 雲端格式化。",
         "noLanguageModels": "缺少可用的語言模型，無法進行格式化。",
         "syncLanguageModels": "同步語言模型",
         "toast": {
@@ -947,19 +952,19 @@
           "confirm": "刪除"
         },
         "loginDialog": {
-          "title": "需要登入",
-          "description": "如要體驗 Amical 雲端轉錄，需使用您的 Amical 帳號登入，才能啟用高準確度的轉錄功能。",
-          "browserNotice": "點擊「登入」後，系統會將您引導至瀏覽器以完成登入程序。",
+          "title": "需要 API 金鑰",
+          "description": "使用 Sayd 雲端轉錄需要 API 金鑰，請至 sayd.dev 取得。",
+          "browserNotice": "在設定中輸入您的 API 金鑰以啟用雲端轉錄。",
           "cloudBenefit": "快速、高準確度的雲端轉錄",
           "cancel": "取消",
           "openingBrowser": "正在開啟瀏覽器...",
-          "signIn": "登入"
+          "signIn": "設定"
         },
         "toast": {
           "downloadStartFailed": "無法開始下載",
           "downloadCancelFailed": "無法取消下載",
           "deleteFailed": "無法刪除模型",
-          "cloudSelected": "已選取 Amical 雲端模型並啟用了雲端格式化。",
+          "cloudSelected": "已選取 Sayd 雲端模型並啟用了雲端格式化。",
           "selectFailed": "選擇模型時發生錯誤",
           "loginInBrowser": "請在您的網頁中完成登入程序",
           "loginStartFailed": "啟動登入程序時發生錯誤",

@@ -31,7 +31,6 @@ import {
   OpenAICompatibleModel,
 } from "../types/providers";
 import { SettingsService } from "./settings-service";
-import { AuthService } from "./auth-service";
 import { logger } from "../main/logger";
 import { getUserAgent } from "../utils/http-client";
 import { type RemoteProvider } from "../constants/remote-providers";
@@ -49,7 +48,6 @@ import {
 import {
   getSpeechModelIdFromStoredSelection,
   getSpeechModelSelectionKey,
-  isAmicalCloudSelectionValue,
   resolveStoredModelSelectionValue,
 } from "../utils/model-selection";
 
@@ -230,67 +228,7 @@ class ModelService extends EventEmitter {
       // Restore selected model from settings and validate availability
       const savedSelection = await this.getSelectedModel();
 
-      if (savedSelection) {
-        // Validate the saved selection is still available
-        const availableModel = AVAILABLE_MODELS.find(
-          (m) => m.id === savedSelection,
-        );
-
-        // Check if it's a cloud model and user is authenticated
-        if (availableModel?.setup === "cloud") {
-          const authService = AuthService.getInstance();
-          const isAuthenticated = await authService.isAuthenticated();
-
-          if (!isAuthenticated) {
-            // Cloud model selected but not authenticated - auto-switch to local model
-            const downloadedModels = await this.getValidDownloadedModels();
-            const downloadedModelIds = Object.keys(downloadedModels);
-
-            if (downloadedModelIds.length > 0) {
-              const preferredOrder = [
-                "whisper-large-v3-turbo",
-                "whisper-large-v3",
-                "whisper-medium",
-                "whisper-small",
-                "whisper-base",
-                "whisper-tiny",
-              ];
-
-              let newModelId = downloadedModelIds[0];
-              for (const candidateId of preferredOrder) {
-                if (downloadedModels[candidateId]) {
-                  newModelId = candidateId;
-                  break;
-                }
-              }
-
-              await this.applySpeechModelSelection(
-                newModelId,
-                "manual",
-                savedSelection,
-              );
-
-              logger.main.info(
-                "Auto-switched from cloud model to local model on startup (not authenticated)",
-                {
-                  from: savedSelection,
-                  to: newModelId,
-                },
-              );
-            } else {
-              // No local models available
-              await this.applySpeechModelSelection(
-                null,
-                "cleared",
-                savedSelection,
-              );
-              logger.main.warn(
-                "Cleared cloud model selection on startup - not authenticated and no local models available",
-              );
-            }
-          }
-        }
-      } else {
+      if (!savedSelection) {
         // No saved selection, check if we have downloaded models to auto-select
         const downloadedModels = await this.getValidDownloadedModels();
         const downloadedModelCount = Object.keys(downloadedModels).length;
@@ -326,87 +264,11 @@ class ModelService extends EventEmitter {
       // Validate all default models after sync
       await this.validateAndClearInvalidDefaults();
       await this.validateAndNormalizeFormatterConfigSelections();
-
-      // Setup auth event listeners
-      this.setupAuthEventListeners();
     } catch (error) {
       logger.main.error("Error initializing model manager", {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  }
-
-  // Setup auth event listeners to handle logout
-  private setupAuthEventListeners(): void {
-    const authService = AuthService.getInstance();
-
-    authService.on("logged-out", async () => {
-      try {
-        const selectedModelId = await this.getSelectedModel();
-
-        if (selectedModelId) {
-          // Check if the selected model is a cloud model
-          const availableModel = AVAILABLE_MODELS.find(
-            (m) => m.id === selectedModelId,
-          );
-
-          if (availableModel?.setup === "cloud") {
-            // Cloud model selected but user logged out - auto-switch to first downloaded local model
-            const downloadedModels = await this.getValidDownloadedModels();
-            const downloadedModelIds = Object.keys(downloadedModels);
-
-            if (downloadedModelIds.length > 0) {
-              // Find the best local model from preferred order
-              const preferredOrder = [
-                "whisper-large-v3-turbo",
-                "whisper-large-v3",
-                "whisper-medium",
-                "whisper-small",
-                "whisper-base",
-                "whisper-tiny",
-              ];
-
-              let newModelId = downloadedModelIds[0]; // Fallback to first available
-              for (const candidateId of preferredOrder) {
-                if (downloadedModels[candidateId]) {
-                  newModelId = candidateId;
-                  break;
-                }
-              }
-
-              await this.applySpeechModelSelection(
-                newModelId,
-                "manual",
-                selectedModelId,
-              );
-
-              logger.main.info(
-                "Auto-switched from cloud model to local model after logout",
-                {
-                  from: selectedModelId,
-                  to: newModelId,
-                },
-              );
-            } else {
-              // No local models available, clear selection
-              await this.applySpeechModelSelection(
-                null,
-                "cleared",
-                selectedModelId,
-              );
-
-              logger.main.warn(
-                "Cleared cloud model selection after logout - no local models available",
-              );
-            }
-          }
-        }
-      } catch (error) {
-        logger.main.error("Error handling logout in model manager", {
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    });
   }
 
   private ensureModelsDirectory(): void {
@@ -804,42 +666,7 @@ class ModelService extends EventEmitter {
       (await this.settingsService.getFormatterConfig()) || { enabled: false };
     const currentModelId = formatterConfig.modelId;
     const fallbackModelId = formatterConfig.fallbackModelId;
-    const movedToCloud = newModelId === "amical-cloud";
-    const movedFromCloud = oldModelId === "amical-cloud";
-    const usingCloudFormatting = isAmicalCloudSelectionValue(currentModelId);
-
-    const nextConfig = { ...formatterConfig };
-    let updated = false;
-
-    if (movedToCloud && !usingCloudFormatting) {
-      if (currentModelId && !isAmicalCloudSelectionValue(currentModelId)) {
-        nextConfig.fallbackModelId = currentModelId;
-      } else if (!fallbackModelId) {
-        const defaultLanguageModel =
-          await this.settingsService.getDefaultLanguageModel();
-        if (defaultLanguageModel) {
-          nextConfig.fallbackModelId = defaultLanguageModel;
-        }
-      }
-
-      nextConfig.modelId = getSpeechModelSelectionKey("amical-cloud");
-      nextConfig.enabled = true;
-      updated = true;
-    } else if (movedFromCloud && usingCloudFormatting) {
-      const fallback =
-        fallbackModelId ||
-        (await this.settingsService.getDefaultLanguageModel());
-
-      nextConfig.modelId =
-        fallback && !isAmicalCloudSelectionValue(fallback)
-          ? fallback
-          : undefined;
-      updated = true;
-    }
-
-    if (updated) {
-      await this.settingsService.setFormatterConfig(nextConfig);
-    }
+    // No automatic formatter config changes needed for Sayd or local models
   }
 
   private async applySpeechModelSelection(
@@ -887,16 +714,6 @@ class ModelService extends EventEmitter {
         }
 
         logger.main.info("Selecting Sayd cloud model", { modelId });
-      } else if (availableModel?.setup === "cloud") {
-        // Amical Cloud model - check authentication
-        const authService = AuthService.getInstance();
-        const isAuthenticated = await authService.isAuthenticated();
-
-        if (!isAuthenticated) {
-          throw new Error("Authentication required for cloud models");
-        }
-
-        logger.main.info("Selecting cloud model", { modelId });
       } else {
         // Offline model - must be downloaded
         const downloadedModels = await this.getValidDownloadedModels();
@@ -1492,10 +1309,6 @@ class ModelService extends EventEmitter {
         return undefined;
       }
 
-      if (isAmicalCloudSelectionValue(value)) {
-        return getSpeechModelSelectionKey("amical-cloud");
-      }
-
       const normalizedSelection = resolveStoredModelSelectionValue(
         languageModels,
         value,
@@ -1551,7 +1364,7 @@ class ModelService extends EventEmitter {
         const availableModel = AVAILABLE_MODELS.find(
           (m) => m.id === speechModelId,
         );
-        const isAmicalModel = availableModel?.provider === "Amical Cloud";
+        const isCloudModel = availableModel?.setup === "cloud";
         const existsInDb = await modelExists(
           getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper),
           "speech",
@@ -1562,8 +1375,8 @@ class ModelService extends EventEmitter {
           await this.settingsService.setDefaultSpeechModel(normalizedSelection);
         }
 
-        // Amical cloud models are always valid; local models must exist in DB
-        if (!isAmicalModel && !existsInDb) {
+        // Cloud models are always valid; local models must exist in DB
+        if (!isCloudModel && !existsInDb) {
           logger.main.info("Clearing invalid default speech model", {
             modelId: speechModelId,
           });

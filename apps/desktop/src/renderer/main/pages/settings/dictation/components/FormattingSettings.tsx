@@ -27,8 +27,6 @@ export function FormattingSettings() {
     showNoLanguageModels,
     handleFormattingEnabledChange,
     handleFormattingModelChange,
-    handleCloudLogin,
-    isLoginPending,
   } = useFormattingSettings();
 
   return (
@@ -112,14 +110,11 @@ export function FormattingSettings() {
               {showCloudRequiresAuth && (
                 <div className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
                   <span>{t("settings.dictation.formatting.signInCloud")}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCloudLogin}
-                    disabled={isLoginPending}
-                  >
-                    {t("settings.dictation.formatting.signIn")}
-                  </Button>
+                  <Link to="/settings/ai-models" search={{ tab: "speech" }}>
+                    <Button variant="outline" size="sm">
+                      {t("settings.dictation.formatting.signIn")}
+                    </Button>
+                  </Link>
                 </div>
               )}
               {showCloudReady && (

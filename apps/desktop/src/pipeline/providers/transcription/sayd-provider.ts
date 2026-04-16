@@ -7,7 +7,7 @@ import {
 import { logger } from "../../../main/logger";
 import { SettingsService } from "../../../services/settings-service";
 import { getUserAgent } from "../../../utils/http-client";
-import { AppError, ErrorCodes } from "../../../types/error";
+import { AppError, ErrorCodes, type ErrorCode } from "../../../types/error";
 
 // Server message types from the Sayd Talk API
 interface SaydReadyMessage {
@@ -204,7 +204,7 @@ export class SaydProvider implements TranscriptionProvider {
 
       if (!response.ok) {
         const status = response.status;
-        let errorCode = ErrorCodes.UNKNOWN;
+        let errorCode: ErrorCode = ErrorCodes.UNKNOWN;
         if (status === 401 || status === 403)
           errorCode = ErrorCodes.AUTH_REQUIRED;
         else if (status === 429) errorCode = ErrorCodes.RATE_LIMIT_EXCEEDED;

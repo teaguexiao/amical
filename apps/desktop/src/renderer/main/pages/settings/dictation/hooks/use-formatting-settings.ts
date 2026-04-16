@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback } from "react";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import type { FormatterConfig } from "@/types/formatter";
@@ -28,10 +28,6 @@ interface UseFormattingSettingsReturn {
   // Handlers
   handleFormattingEnabledChange: (enabled: boolean) => void;
   handleFormattingModelChange: (modelId: string) => void;
-  handleCloudLogin: () => Promise<void>;
-
-  // Loading state
-  isLoginPending: boolean;
 }
 
 export function useFormattingSettings(): UseFormattingSettingsReturn {
@@ -47,13 +43,15 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
   const defaultLanguageModelQuery = api.models.getDefaultModel.useQuery({
     type: "language",
   });
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(
-    undefined,
-  );
   const utils = api.useUtils();
 
   // Use query data directly
   const formatterConfig = formatterConfigQuery.data ?? null;
+
+  // Sayd config check
+  const modelProvidersConfigQuery =
+    api.settings.getModelProvidersConfig.useQuery();
+  const isSaydConfigured = !!modelProvidersConfigQuery.data?.sayd?.apiKey;
 
   // Mutations with optimistic updates
   const setFormatterConfigMutation =
@@ -87,16 +85,6 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
       },
     });
 
-  const loginMutation = api.auth.login.useMutation({
-    onSuccess: () => {
-      toast.info(t("settings.dictation.formatting.toast.loginInBrowser"));
-    },
-    onError: (error) => {
-      console.error("Failed to initiate login:", error);
-      toast.error(t("settings.dictation.formatting.toast.loginStartFailed"));
-    },
-  });
-
   // Subscriptions
   api.models.onSelectionChanged.useSubscription(undefined, {
     onData: ({ modelType }) => {
@@ -110,35 +98,25 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
     },
   });
 
-  api.auth.onAuthStateChange.useSubscription(undefined, {
-    onData: (authState) => {
-      setIsAuthenticated(authState.isAuthenticated);
-    },
-    onError: (error) => {
-      console.error("Auth state subscription error:", error);
-    },
-  });
-
   // Derived values
   const languageModels = languageModelsQuery.data || [];
   const hasLanguageModels = languageModels.length > 0;
-  const isCloudSpeechSelected = speechModelQuery.data === "amical-cloud";
-  const cloudFormattingOptionValue = getSpeechModelSelectionKey("amical-cloud");
-  const canUseCloudFormatting =
-    isCloudSpeechSelected && (isAuthenticated ?? false);
+  const isSaydSpeechSelected = speechModelQuery.data === "sayd-cloud";
+  const cloudFormattingOptionValue = getSpeechModelSelectionKey("sayd-cloud");
+  const canUseCloudFormatting = isSaydSpeechSelected && isSaydConfigured;
   const hasFormattingOptions = hasLanguageModels || canUseCloudFormatting;
   const formattingEnabled = formatterConfig?.enabled ?? false;
   const disableFormattingToggle = !hasFormattingOptions;
 
   const formattingOptions = useMemo<ComboboxOption[]>(() => {
     const getCloudDisabledReason = () => {
-      if (!isCloudSpeechSelected && !isAuthenticated) {
+      if (!isSaydSpeechSelected && !isSaydConfigured) {
         return t("settings.dictation.formatting.disabledReason.cloudAndSignIn");
       }
-      if (!isCloudSpeechSelected) {
+      if (!isSaydSpeechSelected) {
         return t("settings.dictation.formatting.disabledReason.cloud");
       }
-      if (!isAuthenticated) {
+      if (!isSaydConfigured) {
         return t("settings.dictation.formatting.disabledReason.signIn");
       }
       return undefined;
@@ -165,8 +143,8 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
     return [...options, ...languageOptions];
   }, [
     canUseCloudFormatting,
-    isCloudSpeechSelected,
-    isAuthenticated,
+    isSaydSpeechSelected,
+    isSaydConfigured,
     cloudFormattingOptionValue,
     languageModels,
     t,
@@ -184,7 +162,7 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
       return preferredModelId;
     }
 
-    if (preferredModelId === "amical-cloud") {
+    if (preferredModelId === "sayd-cloud" || preferredModelId === "amical-cloud") {
       return cloudFormattingOptionValue;
     }
 
@@ -207,11 +185,11 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
 
   // Inline state conditions
   const showCloudRequiresSpeech =
-    selectedModelId === cloudFormattingOptionValue && !isCloudSpeechSelected;
+    selectedModelId === cloudFormattingOptionValue && !isSaydSpeechSelected;
   const showCloudRequiresAuth =
     selectedModelId === cloudFormattingOptionValue &&
-    isCloudSpeechSelected &&
-    !isAuthenticated;
+    isSaydSpeechSelected &&
+    !isSaydConfigured;
   const showCloudReady =
     selectedModelId === cloudFormattingOptionValue && canUseCloudFormatting;
   const showNoLanguageModels =
@@ -271,14 +249,6 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
     ],
   );
 
-  const handleCloudLogin = useCallback(async () => {
-    try {
-      await loginMutation.mutateAsync();
-    } catch {
-      // Errors already handled in mutation callbacks
-    }
-  }, [loginMutation]);
-
   return {
     // State
     formattingEnabled,
@@ -296,9 +266,5 @@ export function useFormattingSettings(): UseFormattingSettingsReturn {
     // Handlers
     handleFormattingEnabledChange,
     handleFormattingModelChange,
-    handleCloudLogin,
-
-    // Loading state
-    isLoginPending: loginMutation.isPending,
   };
 }

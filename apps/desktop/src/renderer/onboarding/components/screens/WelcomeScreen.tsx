@@ -17,7 +17,7 @@ interface WelcomeScreenProps {
 
 /**
  * Welcome screen - first screen users see in onboarding
- * Introduces Amical and allows users to select features they're interested in
+ * Introduces Sayd and allows users to select features they're interested in
  */
 export function WelcomeScreen({
   onNext,

@@ -1,6 +1,6 @@
 {
   "app": {
-    "loading": "Cargando Amical..."
+    "loading": "Cargando Sayd..."
   },
   "errors": {
     "generic": "Algo salió mal. Por favor, inténtalo de nuevo."
@@ -19,7 +19,7 @@
     "version": "Versión {{version}}"
   },
   "tray": {
-    "tooltip": "Amical",
+    "tooltip": "Sayd",
     "openConsole": "Abrir consola",
     "about": "Acerca de",
     "quit": "Salir"
@@ -64,7 +64,7 @@
       "supportNote": "Si el problema persiste, por favor contacta a soporte o consulta la documentación para obtener ayuda."
     },
     "welcome": {
-      "title": "Bienvenido a Amical",
+      "title": "Bienvenido a Sayd",
       "subtitle": "Selecciona las funciones que te interesan para personalizar tu experiencia",
       "skip": "Omitir configuración inicial",
       "comingSoon": "Próximamente",
@@ -99,7 +99,7 @@
     },
     "permissions": {
       "title": "Configurar permisos",
-      "subtitle": "Amical necesita algunos permisos para funcionar correctamente",
+      "subtitle": "Sayd necesita algunos permisos para funcionar correctamente",
       "waiting": "Esperando permisos...",
       "polling": "Verificando cambios de permisos...",
       "allGranted": {
@@ -125,11 +125,11 @@
       "accessibility": {
         "title": "Acceso de accesibilidad",
         "description": "Requerido para pegar transcripciones y atajos de teclado globales (solo macOS)",
-        "deniedHelp": "Agrega Amical a Accesibilidad en Configuración del Sistema"
+        "deniedHelp": "Agrega Sayd a Accesibilidad en Configuración del Sistema"
       }
     },
     "discovery": {
-      "title": "¿Cómo descubriste Amical?",
+      "title": "¿Cómo descubriste Sayd?",
       "subtitle": "Esto nos ayuda a entender de dónde vienen nuestros usuarios",
       "sources": {
         "searchEngine": "Motor de búsqueda (Google, Bing, etc.)",
@@ -141,7 +141,7 @@
         "other": "Otro"
       },
       "toast": {
-        "selectSource": "Por favor selecciona cómo descubriste Amical",
+        "selectSource": "Por favor selecciona cómo descubriste Sayd",
         "otherDetailsRequired": "Por favor proporciona detalles para \"Otro\""
       },
       "other": {
@@ -152,7 +152,7 @@
     },
     "modelSelection": {
       "title": "Elige tu modelo de IA",
-      "subtitle": "Selecciona cómo quieres que Amical procese tu audio",
+      "subtitle": "Selecciona cómo quieres que Sayd procese tu audio",
       "completeSetupToContinue": "Completa la configuración para continuar",
       "recommended": "Recomendado",
       "prosLabel": "Ventajas:",
@@ -168,17 +168,17 @@
       },
       "models": {
         "cloud": {
-          "title": "Amical Cloud",
-          "subtitle": "Rápido, más preciso y gratuito, sin configuración necesaria",
+          "title": "Sayd Cloud",
+          "subtitle": "Transcripción en la nube rápida y precisa con clave API",
           "description": "Ideal si quieres la mejor precisión o tu dispositivo no puede ejecutar modelos locales.\\nProcesamiento seguro; el audio nunca se almacena.",
           "pros": {
             "free": "Gratuito",
             "fast": "Rápido",
             "accurate": "Más preciso",
-            "noSetup": "Sin configuración necesaria"
+            "noSetup": "Configuración fácil"
           },
           "cons": {
-            "internetLogin": "Necesita internet e inicio de sesión"
+            "internetLogin": "Necesita internet y clave API"
           }
         },
         "local": {
@@ -206,9 +206,14 @@
         "retry": "Reintentar"
       },
       "cloud": {
-        "title": "Se requiere iniciar sesión",
-        "description": "La transcripción en la nube necesita autenticación para continuar.",
+        "title": "Clave API de Sayd Cloud",
+        "description": "Ingresa tu clave API de Sayd para habilitar la transcripción en la nube.",
+        "getApiKey": "Obtén tu clave API en",
+        "success": "¡Sayd Cloud conectado exitosamente!",
         "error": {
+          "apiKeyRequired": "Por favor ingresa tu clave API.",
+          "invalidApiKey": "Clave API inválida. Por favor verifica e intenta de nuevo.",
+          "connectionFailed": "No se pudo conectar a Sayd Cloud. Por favor, inténtalo de nuevo.",
           "loginStartFailed": "No se pudo abrir el inicio de sesión. Por favor, inténtalo de nuevo."
         }
       },
@@ -227,7 +232,7 @@
     },
     "completion": {
       "title": "¡Configuración completada!",
-      "start": "Comenzar a usar Amical",
+      "start": "Comenzar a usar Sayd",
       "quickConfig": {
         "title": "Configuración rápida"
       },
@@ -260,7 +265,7 @@
         "noAudio": "Sin audio de \"{{microphone}}\"",
         "emptyTranscript": "No se detectó voz de \"{{microphone}}\"",
         "transcriptionFailed": "Ocurrió un error durante la transcripción",
-        "recordingDurationWarning": "Amical admite hasta {{maxMinutes}} minutos de dictado continuo. Inicia un nuevo dictado si es necesario.",
+        "recordingDurationWarning": "Sayd admite hasta {{maxMinutes}} minutos de dictado continuo. Inicia un nuevo dictado si es necesario.",
         "recordingAutoStopped": "Se alcanzó la duración máxima de dictado. Inicia un nuevo dictado si es necesario."
       },
       "action": {
@@ -283,7 +288,7 @@
         },
         "recordingDurationWarning": {
           "title": "El dictado se detendrá en {{minutes}} minutos",
-          "description": "Amical admite hasta {{maxMinutes}} minutos de dictado continuo. Inicia un nuevo dictado si es necesario."
+          "description": "Sayd admite hasta {{maxMinutes}} minutos de dictado continuo. Inicia un nuevo dictado si es necesario."
         },
         "recordingAutoStopped": {
           "title": "Dictado detenido automáticamente",
@@ -366,15 +371,15 @@
       },
       "about": {
         "title": "Acerca de",
-        "description": "Acerca de Amical e información de versión"
+        "description": "Acerca de Sayd e información de versión"
       }
     },
     "sidebar": {
       "docs": "Documentación",
       "community": "Comunidad",
       "discordAlt": "Discord",
-      "logoAlt": "Logo de Amical",
-      "brand": "Amical"
+      "logoAlt": "Logo de Sayd",
+      "brand": "Sayd"
     },
     "search": {
       "buttonLabel": "Buscar",
@@ -427,7 +432,7 @@
         },
         "restartDialog": {
           "title": "Se requiere reiniciar",
-          "description": "Reinicia Amical para aplicar los cambios de idioma. También puedes aplicarlos en el próximo inicio.",
+          "description": "Reinicia Sayd para aplicar los cambios de idioma. También puedes aplicarlos en el próximo inicio.",
           "restartNow": "Reiniciar ahora",
           "later": "Aplicar en el próximo inicio"
         },
@@ -472,7 +477,7 @@
       },
       "telemetry": {
         "label": "Telemetría anónima",
-        "description": "Ayuda a mejorar Amical compartiendo datos de uso anónimos.",
+        "description": "Ayuda a mejorar Sayd compartiendo datos de uso anónimos.",
         "learnMore": "Más información"
       },
       "dataLocation": {
@@ -642,22 +647,22 @@
         "label": "Formato",
         "badge": "Alfa",
         "description": "Aplica puntuación y estructura a tus transcripciones.",
-        "cloudOptionLabel": "Amical Cloud (Amical)",
-        "disabledTooltip": "Sincroniza un modelo de lenguaje o selecciona la transcripción de Amical Cloud para habilitar el formato.",
+        "cloudOptionLabel": "Sayd Cloud",
+        "disabledTooltip": "Sincroniza un modelo de lenguaje o selecciona la transcripción de Sayd Cloud para habilitar el formato.",
         "disabledReason": {
-          "cloudAndSignIn": "Requiere transcripción de Amical Cloud e inicio de sesión",
-          "cloud": "Requiere transcripción de Amical Cloud",
-          "signIn": "Requiere iniciar sesión"
+          "cloudAndSignIn": "Requiere transcripción de Sayd Cloud y clave API",
+          "cloud": "Requiere transcripción de Sayd Cloud",
+          "signIn": "Requiere clave API"
         },
         "manageLanguageModels": "Administrar modelos de lenguaje",
         "modelLabel": "Modelo de formato",
         "modelDescription": "Elige el modelo usado para dar formato a tu transcripción.",
         "modelPlaceholder": "Seleccionar un modelo...",
-        "requiresCloudSpeech": "Requiere transcripción de Amical Cloud.",
+        "requiresCloudSpeech": "Requiere transcripción de Sayd Cloud.",
         "switchSpeechModel": "Cambiar modelo de voz",
-        "signInCloud": "Inicia sesión para usar el formato de Amical Cloud.",
-        "signIn": "Iniciar sesión",
-        "cloudReady": "Usando formato de Amical Cloud.",
+        "signInCloud": "Agrega clave API para usar el formato de Sayd Cloud.",
+        "signIn": "Agregar clave API",
+        "cloudReady": "Usando formato de Sayd Cloud.",
         "noLanguageModels": "El formato no se ejecutará: no hay modelo de lenguaje disponible.",
         "syncLanguageModels": "Sincronizar modelos de lenguaje",
         "toast": {
@@ -947,19 +952,19 @@
           "confirm": "Eliminar"
         },
         "loginDialog": {
-          "title": "Se requiere iniciar sesión",
-          "description": "Para usar la transcripción de Amical Cloud, necesitas iniciar sesión con tu cuenta de Amical. Esto permite la transcripción segura en la nube con alta precisión.",
-          "browserNotice": "Después de hacer clic en \"Iniciar sesión\", serás redirigido a tu navegador para completar el proceso de inicio de sesión.",
+          "title": "Se requiere clave API",
+          "description": "Para usar la transcripción de Sayd Cloud, necesitas una clave API de Sayd. Obténla en sayd.dev.",
+          "browserNotice": "Ingresa tu clave API en la configuración para habilitar la transcripción en la nube.",
           "cloudBenefit": "Transcripción en la nube rápida y precisa",
           "cancel": "Cancelar",
           "openingBrowser": "Abriendo navegador...",
-          "signIn": "Iniciar sesión"
+          "signIn": "Configurar"
         },
         "toast": {
           "downloadStartFailed": "No se pudo iniciar la descarga",
           "downloadCancelFailed": "No se pudo cancelar la descarga",
           "deleteFailed": "No se pudo eliminar el modelo",
-          "cloudSelected": "Amical Cloud seleccionado. Formato en la nube habilitado.",
+          "cloudSelected": "Sayd Cloud seleccionado. Formato en la nube habilitado.",
           "selectFailed": "No se pudo seleccionar el modelo",
           "loginInBrowser": "Por favor completa el inicio de sesión en tu navegador",
           "loginStartFailed": "No se pudo iniciar el proceso de inicio de sesión",

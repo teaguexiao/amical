@@ -136,8 +136,6 @@ export function getSpeechModelSelectionKey(modelId: string): string {
   let providerInstanceId: string;
   if (modelId === "sayd-cloud") {
     providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.sayd);
-  } else if (modelId === "amical-cloud") {
-    providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.amical);
   } else {
     providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper);
   }
@@ -157,26 +155,6 @@ export function getSpeechModelIdFromStoredSelection(
   }
 
   return parsed.type === "speech" ? parsed.id : undefined;
-}
-
-export function isAmicalCloudSelectionValue(
-  value: string | null | undefined,
-): boolean {
-  if (!value) {
-    return false;
-  }
-
-  const parsed = parseModelSelectionKey(value);
-  if (!parsed) {
-    return value === "amical-cloud";
-  }
-
-  return (
-    parsed.providerInstanceId ===
-      getSystemProviderInstanceId(PROVIDER_TYPES.amical) &&
-    parsed.type === "speech" &&
-    parsed.id === "amical-cloud"
-  );
 }
 
 export function isSaydSelectionValue(

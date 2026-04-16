@@ -287,7 +287,7 @@ function HistoryTableCard({
                         </TooltipProvider>
                       )}
                       {item.audioFile &&
-                        item.speechModel === "amical-cloud" && (
+                        item.speechModel === "sayd-cloud" && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>

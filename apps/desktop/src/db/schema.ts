@@ -71,7 +71,7 @@ export const models = sqliteTable(
   {
     // Identity
     id: text("id").notNull(),
-    providerType: text("provider_type").notNull(), // "amical", "local-whisper", "openrouter", "ollama", "openai-compatible"
+    providerType: text("provider_type").notNull(), // "sayd", "local-whisper", "openrouter", "ollama", "openai-compatible"
     providerInstanceId: text("provider_instance_id").notNull(), // Stable configured instance ID
     provider: text("provider").notNull(), // Display label
 
@@ -211,7 +211,7 @@ export interface AppSettingsData {
     lastVisitedScreen?: string; // Last screen user was on (for resume)
     skippedScreens?: string[]; // Screens skipped via feature flags
     featureInterests?: string[]; // Selected features (max 3)
-    discoverySource?: string; // How user found Amical
+    discoverySource?: string; // How user found Sayd
     selectedModelType: "cloud" | "local"; // User's model choice
     modelRecommendation?: {
       suggested: "cloud" | "local"; // System recommendation
