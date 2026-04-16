@@ -58,7 +58,9 @@ export default function ProviderAccordion({
       ? t("settings.aiModels.providers.openRouter")
       : provider === REMOTE_PROVIDERS.ollama
         ? t("settings.aiModels.providers.ollama")
-        : t("settings.aiModels.providers.openAICompatible");
+        : provider === REMOTE_PROVIDERS.sayd
+          ? t("settings.aiModels.providers.sayd", { defaultValue: "Sayd" })
+          : t("settings.aiModels.providers.openAICompatible");
 
   const invalidateProviderQueries = () => {
     utils.settings.getModelProvidersConfig.invalidate();
@@ -110,6 +112,14 @@ export default function ProviderAccordion({
       },
     });
 
+  const setSaydConfigMutation = api.settings.setSaydConfig.useMutation({
+    onSuccess: handleConfigSaved,
+    onError: (error) => {
+      console.error("Failed to save Sayd config:", error);
+      handleConfigSaveFailed();
+    },
+  });
+
   const handleValidationSuccess = (success: boolean, error?: string) => {
     setIsValidating(false);
 
@@ -118,6 +128,8 @@ export default function ProviderAccordion({
         setOpenRouterConfigMutation.mutate({ apiKey: inputValue.trim() });
       } else if (provider === REMOTE_PROVIDERS.ollama) {
         setOllamaConfigMutation.mutate({ url: inputValue.trim() });
+      } else if (provider === REMOTE_PROVIDERS.sayd) {
+        setSaydConfigMutation.mutate({ apiKey: inputValue.trim() });
       } else {
         setOpenAICompatibleConfigMutation.mutate({
           apiKey: inputValue.trim(),
@@ -177,6 +189,13 @@ export default function ProviderAccordion({
       onError: handleValidationError,
     });
 
+  const validateSaydMutation =
+    api.models.validateSaydConnection.useMutation({
+      onSuccess: (result) =>
+        handleValidationSuccess(result.success, result.error),
+      onError: handleValidationError,
+    });
+
   const handleProviderRemoved = () => {
     invalidateProviderQueries();
     setStatus("disconnected");
@@ -224,6 +243,15 @@ export default function ProviderAccordion({
       },
     });
 
+  const removeSaydProviderMutation =
+    api.models.removeSaydProvider.useMutation({
+      onSuccess: handleProviderRemoved,
+      onError: (error) => {
+        console.error("Failed to remove Sayd provider:", error);
+        handleProviderRemoveFailed();
+      },
+    });
+
   useEffect(() => {
     const config = modelProvidersConfigQuery.data;
     if (!config) {
@@ -246,6 +274,19 @@ export default function ProviderAccordion({
     if (provider === REMOTE_PROVIDERS.ollama) {
       if (config.ollama?.url) {
         setInputValue(config.ollama.url);
+        setBaseURLValue("");
+        setStatus("connected");
+      } else {
+        setInputValue("");
+        setBaseURLValue("");
+        setStatus("disconnected");
+      }
+      return;
+    }
+
+    if (provider === REMOTE_PROVIDERS.sayd) {
+      if (config.sayd?.apiKey) {
+        setInputValue(config.sayd.apiKey);
         setBaseURLValue("");
         setStatus("connected");
       } else {
@@ -293,6 +334,13 @@ export default function ProviderAccordion({
       return;
     }
 
+    if (provider === REMOTE_PROVIDERS.sayd) {
+      setIsValidating(true);
+      setValidationError("");
+      validateSaydMutation.mutate({ apiKey: trimmedInput });
+      return;
+    }
+
     setIsValidating(true);
     setValidationError("");
     validateOpenAICompatibleMutation.mutate({
@@ -306,6 +354,8 @@ export default function ProviderAccordion({
       removeOpenRouterProviderMutation.mutate();
     } else if (provider === REMOTE_PROVIDERS.ollama) {
       removeOllamaProviderMutation.mutate();
+    } else if (provider === REMOTE_PROVIDERS.sayd) {
+      removeSaydProviderMutation.mutate();
     } else {
       removeOpenAICompatibleProviderMutation.mutate();
     }
@@ -380,14 +430,17 @@ export default function ProviderAccordion({
               ) : (
                 <Input
                   type={
-                    provider === REMOTE_PROVIDERS.openRouter
+                    provider === REMOTE_PROVIDERS.openRouter ||
+                    provider === REMOTE_PROVIDERS.sayd
                       ? "password"
                       : "text"
                   }
                   placeholder={t(
                     provider === REMOTE_PROVIDERS.openRouter
                       ? "settings.aiModels.provider.placeholders.openRouter"
-                      : "settings.aiModels.provider.placeholders.ollama",
+                      : provider === REMOTE_PROVIDERS.sayd
+                        ? "settings.aiModels.provider.placeholders.sayd"
+                        : "settings.aiModels.provider.placeholders.ollama",
                   )}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}

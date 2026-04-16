@@ -44,6 +44,11 @@ const OpenAICompatibleConfigSchema = z.object({
   baseURL: z.string().url(),
 });
 
+const SaydConfigSchema = z.object({
+  apiKey: z.string(),
+  apiEndpoint: z.string().url().optional(),
+});
+
 const ModelProvidersConfigSchema = z.object({
   openRouter: OpenRouterConfigSchema.optional(),
   ollama: OllamaConfigSchema.optional(),
@@ -567,6 +572,33 @@ export const settingsRouter = createRouter({
         const logger = ctx.serviceManager.getLogger();
         if (logger) {
           logger.main.error("Error setting OpenAI-compatible config:", error);
+        }
+        throw error;
+      }
+    }),
+
+  // Set Sayd configuration
+  setSaydConfig: procedure
+    .input(SaydConfigSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const settingsService =
+          ctx.serviceManager.getService("settingsService");
+        if (!settingsService) {
+          throw new Error("SettingsService not available");
+        }
+        await settingsService.setSaydConfig(input);
+
+        const logger = ctx.serviceManager.getLogger();
+        if (logger) {
+          logger.main.info("Sayd configuration updated");
+        }
+
+        return true;
+      } catch (error) {
+        const logger = ctx.serviceManager.getLogger();
+        if (logger) {
+          logger.main.error("Error setting Sayd config:", error);
         }
         throw error;
       }

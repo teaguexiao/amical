@@ -279,6 +279,33 @@ export class SettingsService extends EventEmitter {
   }
 
   /**
+   * Get Sayd configuration
+   */
+  async getSaydConfig(): Promise<
+    { apiKey: string; apiEndpoint?: string } | undefined
+  > {
+    const config = await this.getModelProvidersConfig();
+    return config?.sayd;
+  }
+
+  /**
+   * Update Sayd configuration
+   */
+  async setSaydConfig(config: {
+    apiKey: string;
+    apiEndpoint?: string;
+  }): Promise<void> {
+    const currentConfig = await this.getModelProvidersConfig();
+    await this.setModelProvidersConfig({
+      ...currentConfig,
+      sayd: {
+        apiKey: config.apiKey.trim(),
+        apiEndpoint: config.apiEndpoint?.trim() || undefined,
+      },
+    });
+  }
+
+  /**
    * Get default speech model (Whisper)
    */
   async getDefaultSpeechModel(): Promise<string | undefined> {

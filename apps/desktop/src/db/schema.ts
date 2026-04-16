@@ -164,6 +164,10 @@ export interface AppSettingsData {
       apiKey: string;
       baseURL: string;
     };
+    sayd?: {
+      apiKey: string;
+      apiEndpoint?: string; // Custom endpoint, defaults to https://api.sayd.dev
+    };
     defaultSpeechModel?: string; // Selection key "<providerInstanceId>::speech::<id>" or legacy speech model ID
     defaultLanguageModel?: string; // Selection key "<providerInstanceId>::language::<id>" or legacy language model ID
     defaultEmbeddingModel?: string; // Selection key "<providerInstanceId>::embedding::<id>" or legacy embedding model ID

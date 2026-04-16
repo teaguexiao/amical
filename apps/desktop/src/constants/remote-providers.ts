@@ -2,6 +2,7 @@ export const REMOTE_PROVIDERS = {
   openRouter: "OpenRouter",
   ollama: "Ollama",
   openAICompatible: "OpenAI Compatible",
+  sayd: "Sayd",
 } as const;
 
 export type RemoteProvider =

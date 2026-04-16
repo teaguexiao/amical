@@ -30,6 +30,7 @@ const remoteProviderSchema = z.enum([
   REMOTE_PROVIDERS.openRouter,
   REMOTE_PROVIDERS.ollama,
   REMOTE_PROVIDERS.openAICompatible,
+  REMOTE_PROVIDERS.sayd,
 ]);
 
 const syncedProviderModelSchema = z.object({
@@ -95,20 +96,22 @@ export const modelsRouter = createRouter({
         const isAuthenticated = await authService.isAuthenticated();
 
         // Map available models to Model format using downloaded data if available
+        const getProviderTypeForModel = (modelId: string) => {
+          if (modelId === "sayd-cloud") return PROVIDER_TYPES.sayd;
+          if (modelId === "amical-cloud") return PROVIDER_TYPES.amical;
+          return PROVIDER_TYPES.localWhisper;
+        };
+        const getProviderInstanceIdForModel = (modelId: string) =>
+          getSystemProviderInstanceId(getProviderTypeForModel(modelId));
+
         let models = availableModels.map((m) => {
           const downloaded = downloadedModels[m.id];
           if (downloaded) {
             // Include setup field from available model metadata
             return {
               ...downloaded,
-              providerType:
-                m.id === "amical-cloud"
-                  ? PROVIDER_TYPES.amical
-                  : PROVIDER_TYPES.localWhisper,
-              providerInstanceId:
-                m.id === "amical-cloud"
-                  ? getSystemProviderInstanceId(PROVIDER_TYPES.amical)
-                  : getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper),
+              providerType: getProviderTypeForModel(m.id),
+              providerInstanceId: getProviderInstanceIdForModel(m.id),
               provider: m.provider,
               setup: m.setup,
             } as Model & { setup: "offline" | "cloud" };
@@ -116,14 +119,8 @@ export const modelsRouter = createRouter({
           // Create a partial Model for non-downloaded models
           return {
             id: m.id,
-            providerType:
-              m.id === "amical-cloud"
-                ? PROVIDER_TYPES.amical
-                : PROVIDER_TYPES.localWhisper,
-            providerInstanceId:
-              m.id === "amical-cloud"
-                ? getSystemProviderInstanceId(PROVIDER_TYPES.amical)
-                : getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper),
+            providerType: getProviderTypeForModel(m.id),
+            providerInstanceId: getProviderInstanceIdForModel(m.id),
             name: m.name,
             provider: m.provider,
             type: "speech" as const,
@@ -145,9 +142,18 @@ export const modelsRouter = createRouter({
 
         // Apply selectable filtering for dropdown/combobox
         if (input.selectable) {
+          // Check Sayd API key configuration
+          const settingsService =
+            ctx.serviceManager.getService("settingsService");
+          const saydConfig = await settingsService.getSaydConfig();
+          const isSaydConfigured = !!saydConfig?.apiKey;
+
           models = models.filter((m) => {
             const model = m as Model & { setup: "offline" | "cloud" };
-            // Filter cloud models if not authenticated
+            if (model.provider === "Sayd") {
+              return isSaydConfigured;
+            }
+            // Filter other cloud models if not authenticated
             if (model.setup === "cloud") {
               return isAuthenticated;
             }
@@ -326,6 +332,43 @@ export const modelsRouter = createRouter({
         input.baseURL,
         input.apiKey,
       );
+    }),
+
+  validateSaydConnection: procedure
+    .input(z.object({ apiKey: z.string(), apiEndpoint: z.string().optional() }))
+    .mutation(async ({ input, ctx }): Promise<ValidationResult> => {
+      // Validate Sayd API key by making a simple POST to /api/talk
+      // and checking for auth errors
+      const endpoint = input.apiEndpoint || "https://api.sayd.dev";
+      try {
+        const response = await fetch(
+          `${endpoint}/api/talk`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": input.apiKey,
+            },
+            body: JSON.stringify({
+              language: "en",
+              sample_rate: 16000,
+              codec: "pcm16",
+            }),
+          },
+        );
+
+        if (response.status === 401 || response.status === 403) {
+          return { success: false, error: "Invalid API key" };
+        }
+
+        // Any other response (including 200 or 400) means the key is valid
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Connection failed",
+        };
+      }
     }),
 
   // Provider model fetching
@@ -532,6 +575,10 @@ export const modelsRouter = createRouter({
       REMOTE_PROVIDERS.openAICompatible,
       "openAICompatible",
     ),
+  ),
+
+  removeSaydProvider: procedure.mutation(({ ctx }) =>
+    removeProviderEndpoint(ctx, REMOTE_PROVIDERS.sayd, "sayd"),
   ),
 
   // Subscriptions using Observables

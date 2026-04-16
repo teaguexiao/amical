@@ -22,9 +22,11 @@ import {
   Trash2,
   LogIn,
   Cloud,
+  Key,
 } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   TooltipContent,
   Tooltip,
@@ -127,6 +129,9 @@ export default function SpeechTab() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(
     undefined,
   );
+  const [showSaydApiKeyDialog, setShowSaydApiKeyDialog] = useState(false);
+  const [saydApiKeyInput, setSaydApiKeyInput] = useState("");
+  const [isSaydValidating, setIsSaydValidating] = useState(false);
 
   // tRPC queries
   const availableModelsQuery = api.models.getAvailableModels.useQuery();
@@ -195,6 +200,62 @@ export default function SpeechTab() {
     onError: (error) => {
       console.error("Failed to initiate login:", error);
       toast.error(t("settings.aiModels.speech.toast.loginStartFailed"));
+    },
+  });
+
+  // Sayd config
+  const modelProvidersConfigQuery =
+    api.settings.getModelProvidersConfig.useQuery();
+  const isSaydConfigured = !!modelProvidersConfigQuery.data?.sayd?.apiKey;
+
+  const validateSaydMutation =
+    api.models.validateSaydConnection.useMutation({
+      onSuccess: (result) => {
+        setIsSaydValidating(false);
+        if (result.success) {
+          setSaydConfigMutation.mutate({ apiKey: saydApiKeyInput.trim() });
+        } else {
+          toast.error(
+            t("settings.aiModels.provider.toast.validationFailed", {
+              provider: "Sayd",
+              message: result.error || "",
+            }),
+          );
+        }
+      },
+      onError: (error) => {
+        setIsSaydValidating(false);
+        toast.error(
+          t("settings.aiModels.provider.toast.validationError", {
+            provider: "Sayd",
+            message: error.message,
+          }),
+        );
+      },
+    });
+
+  const setSaydConfigMutation = api.settings.setSaydConfig.useMutation({
+    onSuccess: () => {
+      toast.success(
+        t("settings.aiModels.provider.toast.configSaved", {
+          provider: "Sayd",
+        }),
+      );
+      modelProvidersConfigQuery.refetch();
+      setShowSaydApiKeyDialog(false);
+      setSaydApiKeyInput("");
+      // Select the pending sayd model
+      if (pendingCloudModel) {
+        setSelectedModelMutation.mutate({ modelId: pendingCloudModel });
+        setPendingCloudModel(null);
+      }
+    },
+    onError: () => {
+      toast.error(
+        t("settings.aiModels.provider.toast.configSaveFailed", {
+          provider: "Sayd",
+        }),
+      );
     },
   });
 
@@ -354,11 +415,19 @@ export default function SpeechTab() {
     // Check if this is a cloud model
     const model = availableModels.find((m) => m.id === modelId);
     const isCloudModel = model?.provider === "Amical Cloud";
+    const isSaydModel = model?.provider === "Sayd";
 
     // If cloud model and not authenticated, show login dialog
     if (isCloudModel && !isAuthenticated) {
       setPendingCloudModel(modelId);
       setShowLoginDialog(true);
+      return;
+    }
+
+    // If Sayd model and not configured, show API key dialog
+    if (isSaydModel && !isSaydConfigured) {
+      setPendingCloudModel(modelId);
+      setShowSaydApiKeyDialog(true);
       return;
     }
 
@@ -447,11 +516,14 @@ export default function SpeechTab() {
                         const isDownloading =
                           progress?.status === "downloading";
                         const isCloudModel = model.provider === "Amical Cloud";
+                        const isSaydModel = model.provider === "Sayd";
 
-                        // Cloud models can be selected if authenticated, local models need to be downloaded
+                        // Cloud models can be selected if authenticated/configured, local models need to be downloaded
                         const canSelect = isCloudModel
                           ? (isAuthenticated ?? false)
-                          : isDownloaded && isTranscriptionAvailable;
+                          : isSaydModel
+                            ? isSaydConfigured
+                            : isDownloaded && isTranscriptionAvailable;
 
                         return (
                           <TableRow
@@ -490,7 +562,7 @@ export default function SpeechTab() {
                                     </Avatar>
                                     <span>{model.provider}</span>
                                   </div>
-                                  {isCloudModel && (
+                                  {(isCloudModel || isSaydModel) && (
                                     <div className="mt-1">
                                       <Tooltip>
                                         <TooltipTrigger asChild>
@@ -568,8 +640,32 @@ export default function SpeechTab() {
                                   </>
                                 )}
 
+                                {/* Sayd models show key icon or configure button */}
+                                {isSaydModel && (
+                                  <>
+                                    {isSaydConfigured ? (
+                                      <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                        <Cloud className="w-4 h-4 text-blue-500" />
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() =>
+                                          setShowSaydApiKeyDialog(true)
+                                        }
+                                        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white transition-colors"
+                                        title={t(
+                                          "settings.aiModels.provider.placeholders.sayd",
+                                        )}
+                                      >
+                                        <Key className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+
                                 {/* Local models show download/delete buttons */}
                                 {!isCloudModel &&
+                                  !isSaydModel &&
                                   !isDownloaded &&
                                   !isDownloading && (
                                     <button
@@ -586,6 +682,7 @@ export default function SpeechTab() {
                                   )}
 
                                 {!isCloudModel &&
+                                  !isSaydModel &&
                                   !isDownloaded &&
                                   isDownloading && (
                                     <div className="relative">
@@ -638,7 +735,7 @@ export default function SpeechTab() {
                                     </div>
                                   )}
 
-                                {!isCloudModel && isDownloaded && (
+                                {!isCloudModel && !isSaydModel && isDownloaded && (
                                   <button
                                     type="button"
                                     onClick={(e) =>
@@ -734,6 +831,77 @@ export default function SpeechTab() {
                   <LogIn className="w-4 h-4 mr-2" />
                   {t("settings.aiModels.speech.loginDialog.signIn")}
                 </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={showSaydApiKeyDialog}
+        onOpenChange={(open) => {
+          setShowSaydApiKeyDialog(open);
+          if (!open) {
+            setSaydApiKeyInput("");
+            setIsSaydValidating(false);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("settings.aiModels.speech.saydDialog.title", {
+                defaultValue: "Configure Sayd",
+              })}
+            </DialogTitle>
+            <DialogDescription>
+              {t("settings.aiModels.speech.saydDialog.description", {
+                defaultValue:
+                  "Enter your Sayd API key to use cloud transcription with built-in text cleaning.",
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              type="password"
+              placeholder={t("settings.aiModels.provider.placeholders.sayd")}
+              value={saydApiKeyInput}
+              onChange={(e) => setSaydApiKeyInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && saydApiKeyInput.trim()) {
+                  setIsSaydValidating(true);
+                  validateSaydMutation.mutate({
+                    apiKey: saydApiKeyInput.trim(),
+                  });
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowSaydApiKeyDialog(false)}
+            >
+              {t("settings.aiModels.provider.removeDialog.cancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                if (saydApiKeyInput.trim()) {
+                  setIsSaydValidating(true);
+                  validateSaydMutation.mutate({
+                    apiKey: saydApiKeyInput.trim(),
+                  });
+                }
+              }}
+              disabled={!saydApiKeyInput.trim() || isSaydValidating}
+            >
+              {isSaydValidating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {t("settings.aiModels.provider.buttons.validating")}
+                </>
+              ) : (
+                t("settings.aiModels.provider.buttons.connect")
               )}
             </Button>
           </DialogFooter>

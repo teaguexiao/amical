@@ -835,7 +835,8 @@
           "openRouter": "API 金鑰",
           "ollama": "Ollama 網址 (例如 http://localhost:11434)",
           "openAICompatibleApiKey": "API 金鑰",
-          "openAICompatibleBaseURL": "基礎 URL (例如 http://localhost:1234/v1)"
+          "openAICompatibleBaseURL": "基礎 URL (例如 http://localhost:1234/v1)",
+          "sayd": "Sayd API 金鑰"
         },
         "buttons": {
           "connect": "連接",

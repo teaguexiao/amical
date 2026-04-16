@@ -8,6 +8,7 @@ import {
 import { createDefaultContext } from "../pipeline/core/context";
 import { WhisperProvider } from "../pipeline/providers/transcription/whisper-provider";
 import { AmicalCloudProvider } from "../pipeline/providers/transcription/amical-cloud-provider";
+import { SaydProvider } from "../pipeline/providers/transcription/sayd-provider";
 import { createRemoteFormattingProvider } from "../pipeline/providers/formatting/remote-formatting-provider-registry";
 import type { RemoteFormattingProviderType } from "../pipeline/providers/formatting/remote-formatting-provider-registry";
 import { ModelService } from "../services/model-service";
@@ -37,6 +38,7 @@ import {
   getModelSelectionKey,
   getSpeechModelSelectionKey,
   isAmicalCloudSelectionValue,
+  isSaydSelectionValue,
 } from "../utils/model-selection";
 import { countWords } from "../utils/dictation-stats";
 
@@ -46,6 +48,7 @@ import { countWords } from "../utils/dictation-stats";
 export class TranscriptionService {
   private whisperProvider: WhisperProvider;
   private cloudProvider: AmicalCloudProvider;
+  private saydProvider: SaydProvider;
   private currentProvider: TranscriptionProvider | null = null;
   private streamingSessions = new Map<string, StreamingSession>();
   private vadService: VADService | null;
@@ -68,6 +71,7 @@ export class TranscriptionService {
   ) {
     this.whisperProvider = new WhisperProvider(modelService);
     this.cloudProvider = new AmicalCloudProvider();
+    this.saydProvider = new SaydProvider(settingsService);
     this.vadService = vadService;
     this.settingsService = settingsService;
     this.vadMutex = new Mutex();
@@ -92,6 +96,12 @@ export class TranscriptionService {
     // Find the model in AVAILABLE_MODELS
     const model = AVAILABLE_MODELS.find((m) => m.id === selectedModelId);
 
+    // Use Sayd provider for Sayd Cloud models
+    if (model?.provider === "Sayd") {
+      this.currentProvider = this.saydProvider;
+      return this.saydProvider;
+    }
+
     // Use cloud provider for Amical Cloud models
     if (model?.provider === "Amical Cloud") {
       this.currentProvider = this.cloudProvider;
@@ -109,7 +119,8 @@ export class TranscriptionService {
     const model = selectedModelId
       ? AVAILABLE_MODELS.find((m) => m.id === selectedModelId)
       : null;
-    const isCloudModel = model?.provider === "Amical Cloud";
+    const isCloudModel =
+      model?.provider === "Amical Cloud" || model?.provider === "Sayd";
 
     // Only preload for local models
     if (!isCloudModel) {
@@ -124,9 +135,16 @@ export class TranscriptionService {
         const hasModels = await this.isModelAvailable();
         if (hasModels) {
           logger.transcription.info("Preloading Whisper model...");
-          await this.preloadWhisperModel();
-          this.modelWasPreloaded = true;
-          logger.transcription.info("Whisper model preloaded successfully");
+          try {
+            await this.preloadWhisperModel();
+            this.modelWasPreloaded = true;
+            logger.transcription.info("Whisper model preloaded successfully");
+          } catch (error) {
+            logger.transcription.warn(
+              "Whisper model preload failed, transcription will use on-demand loading",
+              { error },
+            );
+          }
         } else {
           logger.transcription.info(
             "Whisper model preloading skipped - no models available",
@@ -181,7 +199,10 @@ export class TranscriptionService {
       const selectedModelId = await this.modelService.getSelectedModel();
       if (selectedModelId) {
         const model = AVAILABLE_MODELS.find((m) => m.id === selectedModelId);
-        if (model?.provider === "Amical Cloud") {
+        if (
+          model?.provider === "Amical Cloud" ||
+          model?.provider === "Sayd"
+        ) {
           return true;
         }
       }
@@ -345,7 +366,7 @@ export class TranscriptionService {
       this.accumulateTranscriptionResult(
         session.transcriptionResults,
         chunkResult.text,
-        provider.name === "amical-cloud",
+        provider.name === "amical-cloud" || provider.name === "sayd",
       );
       if (chunkResult.text.trim()) {
         logger.transcription.info("Whisper returned transcription", {
@@ -420,6 +441,7 @@ export class TranscriptionService {
         formatterConfig?.enabled &&
         isAmicalCloudSelectionValue(formatterConfig.modelId);
       let usedCloudProvider = false;
+      let usedSaydProvider = false;
 
       // Flush provider to get any remaining buffered audio
       await this.transcriptionMutex.acquire();
@@ -434,6 +456,7 @@ export class TranscriptionService {
 
         const provider = await this.selectProvider();
         usedCloudProvider = provider.name === "amical-cloud";
+        usedSaydProvider = provider.name === "sayd";
         const finalResult = await provider.flush({
           sessionId,
           vocabulary: session.context.sharedData.vocabulary,
@@ -451,7 +474,7 @@ export class TranscriptionService {
         this.accumulateTranscriptionResult(
           session.transcriptionResults,
           finalResult.text,
-          usedCloudProvider,
+          usedCloudProvider || usedSaydProvider,
         );
         if (finalResult.text.trim()) {
           logger.transcription.info("Whisper returned final transcription", {
@@ -467,7 +490,7 @@ export class TranscriptionService {
       let rawTranscription = session.transcriptionResults.join("");
 
       // Apply simple pre-formatting for local models (handles Whisper leading space artifact)
-      if (!usedCloudProvider) {
+      if (!usedCloudProvider && !usedSaydProvider) {
         const preSelectionText =
           session.context.sharedData.accessibilityContext?.context
             ?.textSelection?.preSelectionText;
@@ -492,6 +515,7 @@ export class TranscriptionService {
       const formatResult = await this.applyFormattingAndReplacements({
         text: rawTranscription,
         usedCloudProvider,
+        usedSaydProvider,
         vocabulary: session.context.sharedData.vocabulary,
         accessibilityContext: session.context.sharedData.accessibilityContext,
         replacements: session.context.sharedData.replacements,
@@ -515,9 +539,11 @@ export class TranscriptionService {
       });
 
       const selectedModelId = await this.modelService.getSelectedModel();
-      const speechModelId = usedCloudProvider
-        ? "amical-cloud"
-        : selectedModelId || "whisper-local";
+      const speechModelId = usedSaydProvider
+        ? "sayd-cloud"
+        : usedCloudProvider
+          ? "amical-cloud"
+          : selectedModelId || "whisper-local";
 
       await createTranscription({
         text: completeTranscription,
@@ -752,6 +778,7 @@ export class TranscriptionService {
   private async applyFormattingAndReplacements(options: {
     text: string;
     usedCloudProvider: boolean;
+    usedSaydProvider?: boolean;
     vocabulary?: string[];
     accessibilityContext?: StreamingSession["context"]["sharedData"]["accessibilityContext"];
     replacements: Map<string, string>;
@@ -768,9 +795,20 @@ export class TranscriptionService {
     let formattingModel: string | undefined;
     let formattingDuration: number | undefined;
 
+    // Sayd provider includes built-in LLM cleaning — skip separate formatting
+    if (options.usedSaydProvider) {
+      formattingUsed = true;
+      formattingModel = getSpeechModelSelectionKey("sayd-cloud");
+      logger.transcription.debug(
+        "Formatting skipped: Sayd provider includes built-in LLM cleaning",
+      );
+    }
+
     const formatterConfig = await this.settingsService.getFormatterConfig();
 
-    if (!formatterConfig || !formatterConfig.enabled) {
+    if (options.usedSaydProvider) {
+      // Already handled above — skip all formatter logic
+    } else if (!formatterConfig || !formatterConfig.enabled) {
       logger.transcription.debug("Formatting skipped: disabled in config");
     } else if (!text.trim().length) {
       logger.transcription.debug("Formatting skipped: empty transcription");
@@ -971,11 +1009,13 @@ export class TranscriptionService {
       record.detectedLanguage,
     );
     let usedCloudProvider = false;
+    let usedSaydProvider = false;
 
     await this.transcriptionMutex.acquire();
     try {
       const provider = await this.selectProvider();
       usedCloudProvider = provider.name === "amical-cloud";
+      usedSaydProvider = provider.name === "sayd";
       provider.reset();
 
       // Feed each frame with its computed VAD probability
@@ -1005,7 +1045,7 @@ export class TranscriptionService {
         this.accumulateTranscriptionResult(
           transcriptionResults,
           chunkResult.text,
-          usedCloudProvider,
+          usedCloudProvider || usedSaydProvider,
         );
       }
 
@@ -1026,7 +1066,7 @@ export class TranscriptionService {
       this.accumulateTranscriptionResult(
         transcriptionResults,
         finalResult.text,
-        usedCloudProvider,
+        usedCloudProvider || usedSaydProvider,
       );
     } finally {
       this.transcriptionMutex.release();
@@ -1034,7 +1074,7 @@ export class TranscriptionService {
 
     let rawTranscription = transcriptionResults.join("");
 
-    if (!usedCloudProvider) {
+    if (!usedCloudProvider && !usedSaydProvider) {
       rawTranscription = this.preFormatLocalTranscription(
         rawTranscription,
         null,
@@ -1045,14 +1085,17 @@ export class TranscriptionService {
     const formatResult = await this.applyFormattingAndReplacements({
       text: rawTranscription,
       usedCloudProvider,
+      usedSaydProvider,
       vocabulary,
       replacements: context.sharedData.replacements,
       formattingStyle: context.sharedData.userPreferences?.formattingStyle,
     });
 
-    const speechModelId = usedCloudProvider
-      ? "amical-cloud"
-      : selectedModelId || "whisper-local";
+    const speechModelId = usedSaydProvider
+      ? "sayd-cloud"
+      : usedCloudProvider
+        ? "amical-cloud"
+        : selectedModelId || "whisper-local";
     const previousWordCount = countWords(
       record.text,
       record.detectedLanguage ?? record.language,

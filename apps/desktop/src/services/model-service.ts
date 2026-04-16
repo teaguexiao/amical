@@ -879,8 +879,16 @@ class ModelService extends EventEmitter {
       // Check if it's a cloud model
       const availableModel = AVAILABLE_MODELS.find((m) => m.id === modelId);
 
-      if (availableModel?.setup === "cloud") {
-        // Cloud model - check authentication
+      if (availableModel?.provider === "Sayd") {
+        // Sayd cloud model - check API key configuration
+        const saydConfig = await this.settingsService.getSaydConfig();
+        if (!saydConfig?.apiKey) {
+          throw new Error("Sayd API key not configured");
+        }
+
+        logger.main.info("Selecting Sayd cloud model", { modelId });
+      } else if (availableModel?.setup === "cloud") {
+        // Amical Cloud model - check authentication
         const authService = AuthService.getInstance();
         const isAuthenticated = await authService.isAuthenticated();
 

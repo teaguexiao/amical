@@ -133,13 +133,15 @@ export function findModelBySelectionValue<
 }
 
 export function getSpeechModelSelectionKey(modelId: string): string {
-  return getModelSelectionKey(
-    modelId === "amical-cloud"
-      ? getSystemProviderInstanceId(PROVIDER_TYPES.amical)
-      : getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper),
-    "speech",
-    modelId,
-  );
+  let providerInstanceId: string;
+  if (modelId === "sayd-cloud") {
+    providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.sayd);
+  } else if (modelId === "amical-cloud") {
+    providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.amical);
+  } else {
+    providerInstanceId = getSystemProviderInstanceId(PROVIDER_TYPES.localWhisper);
+  }
+  return getModelSelectionKey(providerInstanceId, "speech", modelId);
 }
 
 export function getSpeechModelIdFromStoredSelection(
@@ -174,5 +176,25 @@ export function isAmicalCloudSelectionValue(
       getSystemProviderInstanceId(PROVIDER_TYPES.amical) &&
     parsed.type === "speech" &&
     parsed.id === "amical-cloud"
+  );
+}
+
+export function isSaydSelectionValue(
+  value: string | null | undefined,
+): boolean {
+  if (!value) {
+    return false;
+  }
+
+  const parsed = parseModelSelectionKey(value);
+  if (!parsed) {
+    return value === "sayd-cloud";
+  }
+
+  return (
+    parsed.providerInstanceId ===
+      getSystemProviderInstanceId(PROVIDER_TYPES.sayd) &&
+    parsed.type === "speech" &&
+    parsed.id === "sayd-cloud"
   );
 }

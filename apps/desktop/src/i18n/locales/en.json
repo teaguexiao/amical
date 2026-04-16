@@ -857,7 +857,8 @@
           "openRouter": "API Key",
           "ollama": "Ollama URL (e.g., http://localhost:11434)",
           "openAICompatibleApiKey": "API Key",
-          "openAICompatibleBaseURL": "Base URL (e.g., http://localhost:1234/v1)"
+          "openAICompatibleBaseURL": "Base URL (e.g., http://localhost:1234/v1)",
+          "sayd": "Sayd API Key"
         },
         "buttons": {
           "connect": "Connect",

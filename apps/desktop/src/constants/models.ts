@@ -118,6 +118,42 @@ export interface ModelManagerState {
 
 export const AVAILABLE_MODELS: AvailableWhisperModel[] = [
   {
+    id: "sayd-cloud",
+    name: "Sayd Cloud",
+    type: "whisper",
+    description:
+      "Real-time cloud transcription with built-in LLM cleaning via Sayd Talk API.",
+    checksum: "",
+    filename: "",
+    downloadUrl: "",
+    size: 0,
+    sizeFormatted: "Cloud",
+    modelSize: "Cloud",
+    features: [
+      {
+        icon: "cloud",
+        tooltip: "Cloud-based processing",
+      },
+      {
+        icon: "bolt",
+        tooltip: "Real-time streaming transcription",
+      },
+      {
+        icon: "sparkles",
+        tooltip: "Built-in LLM text cleaning",
+      },
+      {
+        icon: "languages",
+        tooltip: "Multilingual support",
+      },
+    ],
+    speed: 5.0,
+    accuracy: 4.8,
+    setup: "cloud",
+    provider: "Sayd",
+    providerIcon: "/assets/icon_logo.svg",
+  },
+  {
     id: "amical-cloud",
     name: "Amical Cloud",
     type: "whisper",
