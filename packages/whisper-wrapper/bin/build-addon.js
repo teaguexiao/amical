@@ -25,10 +25,10 @@ const addonDir = path.join(pkgDir, "addon");
 const whisperDir = path.join(pkgDir, "whisper.cpp");
 
 if (!fs.existsSync(addonDir) || !fs.existsSync(whisperDir)) {
-  console.error(
-    "whisper.cpp sources not found. Please add them to packages/whisper-wrapper/whisper.cpp",
+  console.log(
+    "[build-addon] whisper.cpp sources not found, skipping native addon build.",
   );
-  process.exit(1);
+  process.exit(0);
 }
 
 const buildDir = path.join(pkgDir, "build");
