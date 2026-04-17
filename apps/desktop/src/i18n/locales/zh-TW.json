@@ -375,11 +375,12 @@
       }
     },
     "sidebar": {
+      "website": "官方網站",
       "docs": "說明文件",
       "community": "社群",
       "discordAlt": "Discord",
       "logoAlt": "Sayd 標誌",
-      "brand": "Sayd"
+      "brand": "Sayd Desktop"
     },
     "search": {
       "buttonLabel": "搜尋",

@@ -670,18 +670,15 @@ export class TranscriptionService {
         ? undefined
         : dictationSettings.selectedLanguage;
 
-    // Load vocabulary and replacements
-    const vocabEntries = await getVocabulary({ limit: 50 });
-    for (const entry of vocabEntries) {
-      if (entry.isReplacement) {
-        context.sharedData.replacements.set(
-          entry.word,
-          entry.replacementWord || "",
-        );
-      } else {
-        context.sharedData.vocabulary.push(entry.word);
-      }
-    }
+    // Vocabulary feature is disabled (coming soon) — skip loading
+    // const vocabEntries = await getVocabulary({ limit: 50 });
+    // for (const entry of vocabEntries) {
+    //   if (entry.isReplacement) {
+    //     context.sharedData.replacements.set(entry.word, entry.replacementWord || "");
+    //   } else {
+    //     context.sharedData.vocabulary.push(entry.word);
+    //   }
+    // }
 
     // TODO: Load formatter config from settings
 

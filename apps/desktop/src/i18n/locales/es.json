@@ -375,11 +375,12 @@
       }
     },
     "sidebar": {
+      "website": "Sitio web",
       "docs": "Documentación",
       "community": "Comunidad",
       "discordAlt": "Discord",
       "logoAlt": "Logo de Sayd",
-      "brand": "Sayd"
+      "brand": "Sayd Desktop"
     },
     "search": {
       "buttonLabel": "Buscar",

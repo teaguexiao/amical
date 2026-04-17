@@ -7,7 +7,7 @@ import { NavigationButtons } from "../shared/NavigationButtons";
 import { ModelSetupModal } from "./ModelSetupModal";
 import { useSystemRecommendation } from "../../hooks/useSystemRecommendation";
 import { ModelType } from "../../../../types/onboarding";
-import { Cloud, Laptop, Sparkles, Check, X, Star } from "lucide-react";
+import { Cloud, Sparkles, Check, X, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -55,20 +55,6 @@ export function ModelSelectionScreen({
       icon: Cloud,
       iconBg: "bg-blue-500/10",
       iconColor: "text-blue-500",
-    },
-    {
-      id: ModelType.Local,
-      title: t("onboarding.modelSelection.models.local.title"),
-      subtitle: t("onboarding.modelSelection.models.local.subtitle"),
-      description: t("onboarding.modelSelection.models.local.description"),
-      pros: [
-        t("onboarding.modelSelection.models.local.pros.privacy"),
-        t("onboarding.modelSelection.models.local.pros.offline"),
-      ],
-      cons: [t("onboarding.modelSelection.models.local.cons.resources")],
-      icon: Laptop,
-      iconBg: "bg-slate-500/10",
-      iconColor: "text-slate-500",
     },
   ];
 

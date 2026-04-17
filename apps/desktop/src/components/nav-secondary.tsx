@@ -11,7 +11,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AuthButton } from "@/components/auth-button";
 import { FeedbackButton } from "@/components/feedback-button";
 import { DevThemeToggle } from "@/components/dev-theme-toggle";
 import { DevFeatureFlagsRefresh } from "@/components/dev-feature-flags-refresh";
@@ -50,7 +49,6 @@ export function NavSecondary({
             </>
           )}
           <FeedbackButton />
-          <AuthButton />
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

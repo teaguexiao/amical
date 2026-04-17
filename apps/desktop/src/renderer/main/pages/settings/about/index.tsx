@@ -2,20 +2,17 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, BookOpen } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/trpc/react";
 import { useTranslation } from "react-i18next";
 
-const CHANGELOG_URL = "https://github.com/amicalhq/amical/releases";
-const GITHUB_URL = "https://github.com/amicalhq/amical";
-const DISCORD_URL = "https://amical.ai/community";
-const CONTACT_EMAIL = "contact@amical.ai";
+const GITHUB_URL = "https://github.com/teaguexiao/amical";
+const CONTACT_EMAIL = "contact@sayd.dev";
 
 export default function AboutSettingsPage() {
   const { t } = useTranslation();
   const [checking, setChecking] = useState(false);
-  const { data: version } = api.settings.getAppVersion.useQuery();
+  const version = "1.0.0";
 
   function handleCheckUpdates() {
     setChecking(true);
@@ -71,24 +68,10 @@ export default function AboutSettingsPage() {
               </p>
             </div>
             <div className="divide-y">
-              <ExternalLink href={CHANGELOG_URL}>
-                <div className="flex items-center justify-between py-4 group cursor-pointer">
-                  <div>
-                    <div className="flex items-center gap-2 font-semibold text-base group-hover:underline">
-                      <BookOpen className="w-5 h-5 text-muted-foreground" />
-                      {t("settings.about.resources.changeLog.title")}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {t("settings.about.resources.changeLog.description")}
-                    </div>
-                  </div>
-                </div>
-              </ExternalLink>
               <ExternalLink href={GITHUB_URL}>
                 <div className="flex items-center justify-between py-4 group cursor-pointer">
                   <div>
                     <div className="flex items-center gap-2 font-semibold text-base group-hover:underline">
-                      {/* GitHub icon as image */}
                       <img
                         src="icons/integrations/github.svg"
                         alt={t("settings.about.resources.github.alt")}
@@ -98,24 +81,6 @@ export default function AboutSettingsPage() {
                     </div>
                     <div className="text-muted-foreground text-xs">
                       {t("settings.about.resources.github.description")}
-                    </div>
-                  </div>
-                </div>
-              </ExternalLink>
-              <ExternalLink href={DISCORD_URL}>
-                <div className="flex items-center justify-between py-4 group cursor-pointer">
-                  <div>
-                    <div className="flex items-center gap-2 font-semibold text-base group-hover:underline">
-                      {/* Discord icon as image */}
-                      <img
-                        src="icons/integrations/discord.svg"
-                        alt={t("settings.about.resources.discord.alt")}
-                        className="w-5 h-5 inline-block align-middle"
-                      />
-                      {t("settings.about.resources.discord.title")}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {t("settings.about.resources.discord.description")}
                     </div>
                   </div>
                 </div>

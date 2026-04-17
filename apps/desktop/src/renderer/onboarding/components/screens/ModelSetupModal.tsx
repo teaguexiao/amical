@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Loader2, Download, AlertCircle, Check, ExternalLink } from "lucide-react";
+import { Loader2, AlertCircle, ExternalLink } from "lucide-react";
 import { api } from "@/trpc/react";
 import { ModelType } from "../../../../types/onboarding";
 import { toast } from "sonner";
@@ -20,13 +19,11 @@ interface ModelSetupModalProps {
   isOpen: boolean;
   onClose: (wasCompleted?: boolean) => void;
   modelType: ModelType;
-  onContinue: () => void; // Called when setup completes - auto-advances to next step
+  onContinue: () => void;
 }
 
 /**
- * Modal for setting up model-specific requirements
- * Cloud: Sayd API key configuration
- * Local: Model download
+ * Modal for setting up Sayd Cloud API key
  */
 export function ModelSetupModal({
   isOpen,
@@ -37,56 +34,11 @@ export function ModelSetupModal({
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [downloadProgress, setDownloadProgress] = useState(0);
-  const [downloadInfo, setDownloadInfo] = useState<{
-    downloaded: number;
-    total: number;
-    speed?: number;
-  } | null>(null);
-  const [modelAlreadyInstalled, setModelAlreadyInstalled] = useState(false);
-  const [installedModelName, setInstalledModelName] = useState<string>("");
-  const [downloadComplete, setDownloadComplete] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState("");
 
-  // Get recommended local model based on hardware
-  const { data: recommendedModelId = "whisper-base" } =
-    api.onboarding.getRecommendedLocalModel.useQuery(undefined, {
-      enabled: modelType === ModelType.Local && isOpen,
-    });
-
-  // tRPC mutations
   const validateSaydMutation = api.models.validateSaydConnection.useMutation();
   const setSaydConfigMutation = api.settings.setSaydConfig.useMutation();
-  const downloadModelMutation = api.models.downloadModel.useMutation();
 
-  // Check for existing downloaded models
-  const { data: downloadedModels } = api.models.getDownloadedModels.useQuery(
-    undefined,
-    {
-      enabled: modelType === ModelType.Local && isOpen,
-    },
-  );
-
-  // Subscribe to download progress
-  api.models.onDownloadProgress.useSubscription(undefined, {
-    onData: (data) => {
-      if (data.modelId === recommendedModelId) {
-        setDownloadProgress(data.progress.progress);
-        setDownloadInfo({
-          downloaded: data.progress.bytesDownloaded || 0,
-          total: data.progress.totalBytes || 0,
-          speed: undefined, // Speed not available in the current API
-        });
-
-        if (data.progress.progress === 100) {
-          setDownloadComplete(true);
-        }
-      }
-    },
-    enabled: modelType === ModelType.Local && isOpen,
-  });
-
-  // Handle Sayd API key validation and save
   const handleSaydSetup = async () => {
     if (!apiKeyInput.trim()) {
       setError(t("onboarding.modelSetup.cloud.error.apiKeyRequired"));
@@ -107,7 +59,6 @@ export function ModelSetupModal({
         return;
       }
 
-      // Save API key
       await setSaydConfigMutation.mutateAsync({
         apiKey: apiKeyInput.trim(),
       });
@@ -122,180 +73,44 @@ export function ModelSetupModal({
     }
   };
 
-  // Handle model download
-  const startDownload = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await downloadModelMutation.mutateAsync({
-        modelId: recommendedModelId,
-      });
-      // Progress will be handled by subscription
-    } catch (err) {
-      console.error("Download error:", err);
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      setError(
-        t("onboarding.modelSetup.local.error.downloadFailed", {
-          message: errorMessage,
-        }),
-      );
-      setIsLoading(false);
-    }
-  };
-
-  // Auto-start download for local models or check if already installed
-  useEffect(() => {
-    if (isOpen && modelType === ModelType.Local && downloadedModels) {
-      // Check if any whisper model is already downloaded
-      const whisperModels = Object.values(downloadedModels).filter(
-        (model) => model.id && model.id.startsWith("whisper-"),
-      );
-
-      if (whisperModels.length > 0) {
-        // Model already exists - user must click Done to confirm
-        setModelAlreadyInstalled(true);
-        setInstalledModelName(whisperModels[0].name || whisperModels[0].id);
-      } else if (!isLoading && !downloadProgress) {
-        // No existing model, start download
-        startDownload();
-      }
-    }
-  }, [isOpen, modelType, downloadedModels]);
-
-  // Format bytes to MB
-  const formatBytes = (bytes: number) => {
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  // Render content based on model type
-  const renderContent = () => {
-    if (modelType === ModelType.Cloud) {
-      return (
-        <>
-          <DialogHeader>
-            <DialogTitle>{t("onboarding.modelSetup.cloud.title")}</DialogTitle>
-            <DialogDescription>
-              {t("onboarding.modelSetup.cloud.description")}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder="sk-..."
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaydSetup()}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t("onboarding.modelSetup.cloud.getApiKey")}{" "}
-                <a
-                  href="https://sayd.dev/signup"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline inline-flex items-center gap-1"
-                >
-                  sayd.dev
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </p>
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {error}
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="space-x-2">
-            <Button variant="outline" onClick={() => onClose(false)}>
-              {t("onboarding.modelSetup.actions.cancel")}
-            </Button>
-            <Button onClick={handleSaydSetup} disabled={isLoading || !apiKeyInput.trim()}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("onboarding.navigation.continue")}
-            </Button>
-          </DialogFooter>
-        </>
-      );
-    }
-
-    // Local model download
-    return (
-      <>
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose(false)}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {modelAlreadyInstalled || downloadComplete
-              ? t("onboarding.modelSetup.local.readyTitle")
-              : t("onboarding.modelSetup.local.downloadingTitle")}
-          </DialogTitle>
+          <DialogTitle>{t("onboarding.modelSetup.cloud.title")}</DialogTitle>
           <DialogDescription>
-            {modelAlreadyInstalled || downloadComplete
-              ? t("onboarding.modelSetup.local.readyDescription")
-              : t("onboarding.modelSetup.local.downloadingDescription")}
+            {t("onboarding.modelSetup.cloud.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {modelAlreadyInstalled || downloadComplete ? (
-            // Show success state when model is ready
-            <div className="flex flex-col items-center gap-3">
-              <div className="rounded-full bg-green-500/10 p-3">
-                <Check className="h-6 w-6 text-green-500" />
-              </div>
-              <div className="text-center">
-                <p className="font-medium">
-                  {modelAlreadyInstalled
-                    ? t("onboarding.modelSetup.local.alreadyInstalled")
-                    : t("onboarding.modelSetup.local.downloadComplete")}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t("onboarding.modelSetup.local.using", {
-                    model: installedModelName || recommendedModelId,
-                  })}
-                </p>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4" />
-              {error}
-              <Button
-                onClick={startDownload}
-                size="sm"
-                variant="outline"
-                className="ml-auto"
+          <div className="space-y-2">
+            <Input
+              type="password"
+              placeholder="sk-..."
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSaydSetup()}
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("onboarding.modelSetup.cloud.getApiKey")}{" "}
+              <a
+                href="https://sayd.dev/signup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center gap-1"
               >
-                {t("onboarding.modelSetup.actions.retry")}
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3">
-                <Download className="h-5 w-5 text-muted-foreground" />
-                <div className="flex-1">
-                  <Progress value={downloadProgress} className="h-2" />
-                </div>
-                <span className="text-sm font-medium">{downloadProgress}%</span>
-              </div>
+                sayd.dev
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </p>
+          </div>
 
-              {downloadInfo && (
-                <div className="text-center text-sm text-muted-foreground">
-                  {formatBytes(downloadInfo.downloaded)} /{" "}
-                  {formatBytes(downloadInfo.total)}
-                  {downloadInfo.speed && (
-                    <span>
-                      {" "}
-                      • {(downloadInfo.speed / 1024 / 1024).toFixed(1)} MB/s
-                    </span>
-                  )}
-                </div>
-              )}
-            </>
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
+            </div>
           )}
         </div>
 
@@ -303,20 +118,12 @@ export function ModelSetupModal({
           <Button variant="outline" onClick={() => onClose(false)}>
             {t("onboarding.modelSetup.actions.cancel")}
           </Button>
-          <Button
-            onClick={onContinue}
-            disabled={!modelAlreadyInstalled && !downloadComplete}
-          >
+          <Button onClick={handleSaydSetup} disabled={isLoading || !apiKeyInput.trim()}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t("onboarding.navigation.continue")}
           </Button>
         </DialogFooter>
-      </>
-    );
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose(false)}>
-      <DialogContent className="sm:max-w-md">{renderContent()}</DialogContent>
+      </DialogContent>
     </Dialog>
   );
 }

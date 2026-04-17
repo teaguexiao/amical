@@ -402,8 +402,8 @@ const config: ForgeConfig = {
       unpack:
         "{*.node,*.dylib,*.so,*.dll,*.metal,**/node_modules/@amical/whisper-wrapper/**,**/whisper.cpp/**,**/.vite/build/whisper-worker-fork.js,**/node_modules/jest-worker/**,**/onnxruntime-node/bin/**}",
     },
-    name: "Amical",
-    executableName: "Amical",
+    name: "Sayd Desktop",
+    executableName: "Sayd Desktop",
     icon: "./assets/logo", // Path to your icon file
     appBundleId: "com.amical.desktop", // Proper bundle ID
     extraResource: [
@@ -428,7 +428,7 @@ const config: ForgeConfig = {
     },
     protocols: [
       {
-        name: "Amical",
+        name: "Sayd Desktop",
         schemes: ["amical"],
       },
     ],
@@ -546,12 +546,12 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
-      name: "Amical",
+      name: "SaydDesktop",
       setupIcon: "./assets/logo.ico",
     }),
     new MakerZIP(
       {
-        // macOS ZIP files will be named like: Amical-darwin-arm64-1.0.0.zip
+        // macOS ZIP files will be named like: Sayd Desktop-darwin-arm64-1.0.0.zip
         // The default naming includes platform and arch, which is good for auto-updates
       },
       ["darwin"],
@@ -559,7 +559,7 @@ const config: ForgeConfig = {
     new MakerDMG(
       {
         //! @see https://github.com/electron/forge/issues/3517#issuecomment-2428129194
-        // macOS DMG files will be named like: Amical-0.0.1-arm64.dmg
+        // macOS DMG files will be named like: Sayd Desktop-0.0.1-arm64.dmg
         icon: "./assets/logo.icns",
         background: "./assets/dmg_bg.tiff",
       },
@@ -624,8 +624,8 @@ const config: ForgeConfig = {
   publishers: [
     new PublisherGithub({
       repository: {
-        owner: "amicalhq",
-        name: "amical",
+        owner: "teaguexiao",
+        name: "sayd-desktop",
       },
       prerelease: true,
       draft: true, // Create draft releases first for review

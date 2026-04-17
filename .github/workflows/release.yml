@@ -207,8 +207,8 @@ jobs:
         run: |
           cd apps/desktop/out/make
           for dmg in *.dmg; do
-            mv "$dmg" "Amical-macos-${{ matrix.arch }}.dmg"
-            echo "Renamed $dmg → Amical-macos-${{ matrix.arch }}.dmg"
+            mv "$dmg" "Sayd-macos-${{ matrix.arch }}.dmg"
+            echo "Renamed $dmg → Sayd-macos-${{ matrix.arch }}.dmg"
           done
 
       - name: Rename artifacts (Windows)
@@ -217,8 +217,8 @@ jobs:
         run: |
           cd apps/desktop/out/make/squirrel.windows/${{ matrix.arch }}
           for exe in *.exe; do
-            mv "$exe" "Amical-windows-${{ matrix.arch }}.exe"
-            echo "Renamed $exe → Amical-windows-${{ matrix.arch }}.exe"
+            mv "$exe" "Sayd-windows-${{ matrix.arch }}.exe"
+            echo "Renamed $exe → Sayd-windows-${{ matrix.arch }}.exe"
           done
 
       - name: Upload artifacts (macOS)
@@ -227,7 +227,7 @@ jobs:
         with:
           name: macos-${{ matrix.arch }}
           path: |
-            apps/desktop/out/make/Amical-macos-${{ matrix.arch }}.dmg
+            apps/desktop/out/make/Sayd-macos-${{ matrix.arch }}.dmg
             apps/desktop/out/make/zip/darwin/${{ matrix.arch }}/*.zip
 
       - name: Upload artifacts (Windows)
@@ -236,7 +236,7 @@ jobs:
         with:
           name: windows-${{ matrix.arch }}
           path: |
-            apps/desktop/out/make/squirrel.windows/${{ matrix.arch }}/Amical-windows-${{ matrix.arch }}.exe
+            apps/desktop/out/make/squirrel.windows/${{ matrix.arch }}/Sayd-windows-${{ matrix.arch }}.exe
             apps/desktop/out/make/squirrel.windows/${{ matrix.arch }}/*.nupkg
             apps/desktop/out/make/squirrel.windows/${{ matrix.arch }}/RELEASES
 
@@ -368,7 +368,7 @@ jobs:
 
           # --- Build release notes ---
           {
-            echo "## Amical Desktop v${VERSION}"
+            echo "## Sayd Desktop v${VERSION}"
             echo ""
 
             # Features
@@ -428,8 +428,8 @@ jobs:
             echo "### Installation"
             echo ""
             echo "**macOS**:"
-            echo "- **DMG**: Download and open the DMG file, then drag Amical to your Applications folder"
-            echo "- **ZIP**: Download and extract the ZIP file, then drag Amical to your Applications folder"
+            echo "- **DMG**: Download and open the DMG file, then drag Sayd to your Applications folder"
+            echo "- **ZIP**: Download and extract the ZIP file, then drag Sayd to your Applications folder"
             echo ""
             echo "**Windows**:"
             echo "- Download and run the .exe installer"
@@ -553,7 +553,7 @@ jobs:
           prerelease: ${{ steps.release_context.outputs.is_prerelease == 'true' }}
           tag_name: ${{ steps.release_context.outputs.current_tag }}
           target_commitish: ${{ steps.release_context.outputs.current_sha }}
-          name: Amical Desktop v${{ steps.package_version.outputs.version }}
+          name: Sayd Desktop v${{ steps.package_version.outputs.version }}
           body_path: release-notes.md
           files: |
             release-notes.json

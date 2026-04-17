@@ -375,11 +375,12 @@
       }
     },
     "sidebar": {
+      "website": "Website",
       "docs": "Docs",
       "community": "Community",
       "discordAlt": "Discord",
       "logoAlt": "Sayd Logo",
-      "brand": "Sayd"
+      "brand": "Sayd Desktop"
     },
     "search": {
       "buttonLabel": "Search",

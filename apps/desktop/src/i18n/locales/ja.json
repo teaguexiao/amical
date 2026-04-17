@@ -375,11 +375,12 @@
       }
     },
     "sidebar": {
+      "website": "ウェブサイト",
       "docs": "ドキュメント",
       "community": "コミュニティ",
       "discordAlt": "Discord",
       "logoAlt": "Sayd ロゴ",
-      "brand": "Sayd"
+      "brand": "Sayd Desktop"
     },
     "search": {
       "buttonLabel": "検索",
