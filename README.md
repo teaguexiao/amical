@@ -1,50 +1,45 @@
-<!-- Markdown with HTML -->
 <div align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://sayd.ai/github-readme-header-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://sayd.ai/github-readme-header-light.png">
-  <img alt="Sayd" src="https://sayd.ai/github-readme-header-light.png">
-</picture>
+  <img alt="Sayd" src="https://raw.githubusercontent.com/teaguexiao/sayd-desktop/main/apps/desktop/public/assets/logo-wordmark.png" width="280">
 </div>
 
 <p align="center">
   <a href="https://opensource.org/license/MIT/">
     <img src="https://img.shields.io/github/license/teaguexiao/sayd-desktop?logo=opensourceinitiative&logoColor=white&label=License&color=8A2BE2" alt="license">
   </a>
+  <a href="https://github.com/teaguexiao/sayd-desktop/releases/latest">
+    <img src="https://img.shields.io/github/v/release/teaguexiao/sayd-desktop?display_name=tag&label=Release" alt="latest release">
+  </a>
 </p>
 
 <p align="center">
-  <a href="https://sayd.ai">Website</a> - <a href="https://sayd.ai/docs">Docs</a> - <a href="https://github.com/teaguexiao/sayd-desktop/issues/new?assignees=&labels=bug&template=bug_report.md">Bug reports</a>
+  <a href="https://sayd.ai">Website</a> · <a href="https://sayd.ai/docs">Docs</a> · <a href="https://github.com/teaguexiao/sayd-desktop/issues/new?assignees=&labels=bug&template=bug_report.md">Report a bug</a>
 </p>
 
 ## Table of Contents
 
-- [Download](#-download)
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [License](#-license)
+- [Download](#download)
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [License](#license)
 
 ## Download
 
-<p>
-  <a href="https://github.com/teaguexiao/sayd-desktop/releases/latest">
-    <img src="https://sayd.ai/download_button_macos.png" alt="Download for macOS" height="60">
-  </a>
-  <a href="https://github.com/teaguexiao/sayd-desktop/releases/latest">
-    <img src="https://sayd.ai/download_button_windows.png" alt="Download for Windows" height="60">
-  </a>
-</p>
+Grab the latest build for your platform:
+
+| Platform | Download |
+| --- | --- |
+| macOS (Apple Silicon) | [![Download macOS arm64](https://img.shields.io/badge/Download-macOS%20arm64-black?logo=apple&logoColor=white)](https://github.com/teaguexiao/sayd-desktop/releases/latest/download/Sayd-macos-arm64.dmg) |
+| macOS (Intel) | [![Download macOS x64](https://img.shields.io/badge/Download-macOS%20x64-black?logo=apple&logoColor=white)](https://github.com/teaguexiao/sayd-desktop/releases/latest/download/Sayd-macos-x64.dmg) |
+| Windows (x64) | [![Download Windows x64](https://img.shields.io/badge/Download-Windows%20x64-0078D6?logo=windows&logoColor=white)](https://github.com/teaguexiao/sayd-desktop/releases/latest/download/Sayd-windows-x64.exe) |
+
+All releases: <https://github.com/teaguexiao/sayd-desktop/releases>
 
 ## Overview
 
 Sayd is an AI-powered dictation app. Powered by [Sayd Cloud](https://sayd.ai) for real-time speech-to-text with built-in LLM text cleaning, Sayd delivers fast and accurate dictation.
 
 Context-aware dictation that adapts to what you're doing: drafting an email, chatting on Discord, writing prompts in your IDE, or messaging friends. Sayd detects the active app and formats your speech accordingly.
-
-<p align="center">
-  <img src="https://sayd.ai/demo/dictation-demo-component.gif" alt="Sayd dictation demo" width="600">
-</p>
 
 ## Features
 
@@ -57,7 +52,7 @@ Context-aware dictation that adapts to what you're doing: drafting an email, cha
 
 ## Tech Stack
 
-- [Sayd Cloud](https://sayd.ai) - Real-time cloud transcription with built-in LLM cleaning
+- [Sayd Cloud](https://sayd.ai) — real-time cloud transcription with built-in LLM cleaning
 - [TypeScript](https://www.typescriptlang.org/)
 - [Electron](https://electronjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
