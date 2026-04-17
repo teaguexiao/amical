@@ -35,7 +35,6 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
           fetch-depth: 0
-          fetch-depth: 0
 
       - name: Verify architecture
         if: matrix.os == 'macos'
