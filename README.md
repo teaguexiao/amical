@@ -15,12 +15,15 @@
   <a href="https://sayd.ai">Website</a> · <a href="https://sayd.ai/docs">Docs</a> · <a href="https://github.com/teaguexiao/sayd-desktop/issues/new?assignees=&labels=bug&template=bug_report.md">Report a bug</a>
 </p>
 
+> Sayd is a fork of [amicalhq/amical](https://github.com/amicalhq/amical), rebranded and adapted to use [Sayd Cloud](https://sayd.ai) for transcription. Huge thanks to the Amical team for the original work.
+
 ## Table of Contents
 
 - [Download](#download)
 - [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Acknowledgements](#acknowledgements)
 - [License](#license)
 
 ## Download
@@ -61,9 +64,13 @@ Context-aware dictation that adapts to what you're doing: drafting an email, cha
 - [Jest](https://jestjs.io/)
 - [Turborepo](https://turbo.build/)
 
+## Acknowledgements
+
+Sayd is built on top of [amicalhq/amical](https://github.com/amicalhq/amical). The core dictation engine, window management, and Electron scaffolding are inherited from that project. Sayd adds the Sayd Cloud transcription provider, rebrands the UI, and tailors the app for the Sayd ecosystem.
+
 ## License
 
-Released under [MIT][license].
+Released under [MIT][license], same as the upstream project.
 
 <!-- REFERENCE LINKS -->
 
