@@ -244,8 +244,7 @@ class IOBridge: NSObject {
                 ShortcutManager.shared.setShortcuts(
                     pushToTalk: shortcutsParams.pushToTalk,
                     toggleRecording: shortcutsParams.toggleRecording,
-                    pasteLastTranscript: shortcutsParams.pasteLastTranscript,
-                    newNote: shortcutsParams.newNote
+                    pasteLastTranscript: shortcutsParams.pasteLastTranscript
                 )
 
                 let resultPayload = SetShortcutsResultSchema(success: true)

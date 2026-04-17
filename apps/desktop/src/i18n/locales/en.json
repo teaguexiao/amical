@@ -534,9 +534,12 @@
       "title": "About",
       "description": "Version information, resources, and support links",
       "toast": {
-        "upToDate": "Version is up to date"
+        "upToDate": "Version is up to date",
+        "updateCheckFailed": "Failed to check for updates"
       },
       "currentVersion": "Current Version",
+      "checkForUpdates": "Check for Updates",
+      "checkingUpdates": "Checking...",
       "resources": {
         "title": "Resources",
         "description": "Get help, report issues, and stay updated with the latest changes",
@@ -691,7 +694,7 @@
       "toast": {
         "pushToTalkUpdated": "Push to talk shortcut updated",
         "handsFreeUpdated": "Hands-free mode shortcut updated",
-        "pasteLastTranscriptUpdated": "Paste last transcript shortcut updated",
+        "pasteLastTranscriptUpdated": "Paste last transcript shortcut updated"
       },
       "pushToTalk": {
         "label": "Push to talk",

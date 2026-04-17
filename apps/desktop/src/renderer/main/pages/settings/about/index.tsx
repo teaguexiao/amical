@@ -5,21 +5,36 @@ import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { api } from "@/trpc/react";
 
-const GITHUB_URL = "https://github.com/teaguexiao/amical";
+const GITHUB_URL = "https://github.com/teaguexiao/sayd-desktop";
 const CONTACT_EMAIL = "contact@sayd.dev";
 
 export default function AboutSettingsPage() {
   const { t } = useTranslation();
   const [checking, setChecking] = useState(false);
-  const version = "1.0.0";
+
+  const versionQuery = api.settings.getAppVersion.useQuery();
+  const checkForUpdates = api.updater.checkForUpdates.useMutation();
+
+  const version = versionQuery.data ?? "...";
 
   function handleCheckUpdates() {
     setChecking(true);
-    setTimeout(() => {
-      setChecking(false);
-      toast.success(t("settings.about.toast.upToDate"));
-    }, 2000);
+    checkForUpdates.mutate(
+      { userInitiated: true },
+      {
+        onSuccess: () => {
+          toast.success(t("settings.about.toast.upToDate"));
+        },
+        onError: () => {
+          toast.error(t("settings.about.toast.updateCheckFailed"));
+        },
+        onSettled: () => {
+          setChecking(false);
+        },
+      },
+    );
   }
 
   return (
@@ -40,10 +55,10 @@ export default function AboutSettingsPage() {
                 {t("settings.about.currentVersion")}
               </div>
               <Badge variant="secondary" className="mt-1">
-                v{version || "..."}
+                v{version}
               </Badge>
             </div>
-            {/* <Button
+            <Button
               variant="outline"
               className="mt-4 md:mt-0 flex items-center gap-2"
               onClick={handleCheckUpdates}
@@ -52,8 +67,10 @@ export default function AboutSettingsPage() {
               <RefreshCw
                 className={"w-4 h-4 " + (checking ? "animate-spin" : "")}
               />
-              {checking ? "Checking..." : "Check for Updates"}
-            </Button> */}
+              {checking
+                ? t("settings.about.checkingUpdates")
+                : t("settings.about.checkForUpdates")}
+            </Button>
           </CardContent>
         </Card>
 

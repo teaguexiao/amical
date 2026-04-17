@@ -523,7 +523,8 @@
       "title": "關於",
       "description": "版本資訊、資源與支援連結",
       "toast": {
-        "upToDate": "版本已是最新狀態"
+        "upToDate": "版本已是最新狀態",
+        "updateCheckFailed": "檢查更新失敗"
       },
       "currentVersion": "目前版本",
       "resources": {
@@ -548,7 +549,9 @@
         "title": "聯絡我們",
         "description": "聯絡我們的團隊以取得支援或提出問題",
         "emailCta": "發送電子郵件"
-      }
+      },
+      "checkForUpdates": "檢查更新",
+      "checkingUpdates": "檢查中..."
     },
     "history": {
       "title": "歷史紀錄",

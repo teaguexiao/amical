@@ -321,9 +321,6 @@ namespace WindowsHelper.Models
 
     public partial class SetShortcutsParams
     {
-        [JsonPropertyName("newNote")]
-        public List<long> NewNote { get; set; }
-
         [JsonPropertyName("pasteLastTranscript")]
         public List<long> PasteLastTranscript { get; set; }
 

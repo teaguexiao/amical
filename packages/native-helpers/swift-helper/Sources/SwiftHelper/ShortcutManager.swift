@@ -15,7 +15,6 @@ class ShortcutManager {
     private var pushToTalkKeys: [Int] = []
     private var toggleRecordingKeys: [Int] = []
     private var pasteLastTranscriptKeys: [Int] = []
-    private var newNoteKeys: [Int] = []
     private var shortcutKeysSet = Set<Int>()
 
     // ============================================================================
@@ -58,20 +57,18 @@ class ShortcutManager {
     func setShortcuts(
         pushToTalk: [Int],
         toggleRecording: [Int],
-        pasteLastTranscript: [Int],
-        newNote: [Int]
+        pasteLastTranscript: [Int]
     ) {
         lock.lock()
         defer { lock.unlock() }
         self.pushToTalkKeys = pushToTalk
         self.toggleRecordingKeys = toggleRecording
         self.pasteLastTranscriptKeys = pasteLastTranscript
-        self.newNoteKeys = newNote
         self.shortcutKeysSet = Set(
-            pushToTalk + toggleRecording + pasteLastTranscript + newNote
+            pushToTalk + toggleRecording + pasteLastTranscript
         )
         logToStderr(
-            "[ShortcutManager] Shortcuts updated - PTT: \(pushToTalk), Toggle: \(toggleRecording), Paste: \(pasteLastTranscript), NewNote: \(newNote)"
+            "[ShortcutManager] Shortcuts updated - PTT: \(pushToTalk), Toggle: \(toggleRecording), Paste: \(pasteLastTranscript)"
         )
     }
 
@@ -227,7 +224,6 @@ class ShortcutManager {
         if pushToTalkKeys.isEmpty
             && toggleRecordingKeys.isEmpty
             && pasteLastTranscriptKeys.isEmpty
-            && newNoteKeys.isEmpty
         {
             return false
         }
@@ -256,10 +252,6 @@ class ShortcutManager {
         let pasteKeys = Set(pasteLastTranscriptKeys)
         let pasteMatch = !pasteKeys.isEmpty && pasteKeys == activeKeys
 
-        // New note: exact match (only these keys pressed)
-        let newNoteKeysSet = Set(newNoteKeys)
-        let newNoteMatch = !newNoteKeysSet.isEmpty && newNoteKeysSet == activeKeys
-
-        return pttMatch || toggleMatch || pasteMatch || newNoteMatch
+        return pttMatch || toggleMatch || pasteMatch
     }
 }

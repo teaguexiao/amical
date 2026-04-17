@@ -523,7 +523,8 @@
       "title": "Acerca de",
       "description": "Información de versión, recursos y enlaces de soporte",
       "toast": {
-        "upToDate": "La versión está actualizada"
+        "upToDate": "La versión está actualizada",
+        "updateCheckFailed": "Error al buscar actualizaciones"
       },
       "currentVersion": "Versión actual",
       "resources": {
@@ -548,7 +549,9 @@
         "title": "Contacto",
         "description": "Ponte en contacto con nuestro equipo para soporte y consultas",
         "emailCta": "Envíanos un correo electrónico"
-      }
+      },
+      "checkForUpdates": "Buscar actualizaciones",
+      "checkingUpdates": "Comprobando..."
     },
     "history": {
       "title": "Historial",
