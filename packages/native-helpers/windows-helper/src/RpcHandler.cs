@@ -510,8 +510,7 @@ namespace WindowsHelper
                 ShortcutManager.Instance.SetShortcuts(
                     ConvertKeycodes(setShortcutsParams.PushToTalk),
                     ConvertKeycodes(setShortcutsParams.ToggleRecording),
-                    ConvertKeycodes(setShortcutsParams.PasteLastTranscript),
-                    ConvertKeycodes(setShortcutsParams.NewNote)
+                    ConvertKeycodes(setShortcutsParams.PasteLastTranscript)
                 );
 
                 return new RpcResponse

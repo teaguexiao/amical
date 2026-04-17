@@ -23,7 +23,6 @@ namespace WindowsHelper
         private int[] _pushToTalkKeys = Array.Empty<int>();
         private int[] _toggleRecordingKeys = Array.Empty<int>();
         private int[] _pasteLastTranscriptKeys = Array.Empty<int>();
-        private int[] _newNoteKeys = Array.Empty<int>();
         private HashSet<int> _shortcutKeysSet = new();
 
         // Track currently pressed modifier keys (left/right distinct).
@@ -50,19 +49,17 @@ namespace WindowsHelper
         /// Update the configured shortcuts.
         /// Called from RpcHandler when setShortcuts RPC is received.
         /// </summary>
-        public void SetShortcuts(int[] pushToTalk, int[] toggleRecording, int[] pasteLastTranscript, int[] newNote)
+        public void SetShortcuts(int[] pushToTalk, int[] toggleRecording, int[] pasteLastTranscript)
         {
             lock (_lock)
             {
                 _pushToTalkKeys = pushToTalk ?? Array.Empty<int>();
                 _toggleRecordingKeys = toggleRecording ?? Array.Empty<int>();
                 _pasteLastTranscriptKeys = pasteLastTranscript ?? Array.Empty<int>();
-                _newNoteKeys = newNote ?? Array.Empty<int>();
                 _shortcutKeysSet = new HashSet<int>(_pushToTalkKeys
                     .Concat(_toggleRecordingKeys)
-                    .Concat(_pasteLastTranscriptKeys)
-                    .Concat(_newNoteKeys));
-                LogToStderr($"Shortcuts updated - PTT: [{string.Join(", ", _pushToTalkKeys)}], Toggle: [{string.Join(", ", _toggleRecordingKeys)}], Paste: [{string.Join(", ", _pasteLastTranscriptKeys)}], NewNote: [{string.Join(", ", _newNoteKeys)}]");
+                    .Concat(_pasteLastTranscriptKeys));
+                LogToStderr($"Shortcuts updated - PTT: [{string.Join(", ", _pushToTalkKeys)}], Toggle: [{string.Join(", ", _toggleRecordingKeys)}], Paste: [{string.Join(", ", _pasteLastTranscriptKeys)}]");
             }
         }
 
@@ -247,8 +244,7 @@ namespace WindowsHelper
                 // Early exit if no shortcuts configured
                 if (_pushToTalkKeys.Length == 0
                     && _toggleRecordingKeys.Length == 0
-                    && _pasteLastTranscriptKeys.Length == 0
-                    && _newNoteKeys.Length == 0)
+                    && _pasteLastTranscriptKeys.Length == 0)
                 {
                     return false;
                 }
@@ -276,11 +272,7 @@ namespace WindowsHelper
                 var pasteKeys = new HashSet<int>(_pasteLastTranscriptKeys);
                 var pasteMatch = pasteKeys.Count > 0 && pasteKeys.SetEquals(activeKeys);
 
-                // New note: exact match (only these keys pressed)
-                var newNoteKeys = new HashSet<int>(_newNoteKeys);
-                var newNoteMatch = newNoteKeys.Count > 0 && newNoteKeys.SetEquals(activeKeys);
-
-                return pttMatch || toggleMatch || pasteMatch || newNoteMatch;
+                return pttMatch || toggleMatch || pasteMatch;
             }
         }
 
