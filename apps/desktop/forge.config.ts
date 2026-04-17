@@ -221,6 +221,46 @@ const config: ForgeConfig = {
         }
       }
 
+      // Third pass: inside each copied native dep, strip any leftover pnpm
+      // workspace symlinks (e.g. @amical/whisper-wrapper/node_modules/@amical/
+      // typescript-config -> .../packages/typescript-config). cpSync with
+      // dereference=true handles these on a fresh copy, but when the local dep
+      // is reused from a prior build the nested symlinks remain. codesign
+      // --deep rejects them with "invalid destination for symbolic link in
+      // bundle", which fails notarization. These are dev-only deps not needed
+      // at runtime. We deliberately only walk INSIDE the copied deps — top
+      // level workspace symlinks at node_modules/@amical/* are still needed
+      // by the Vite main bundle (e.g. @amical/types).
+      const stripNestedSymlinks = (dir: string) => {
+        let entries: string[];
+        try {
+          entries = readdirSync(dir);
+        } catch {
+          return;
+        }
+        for (const entry of entries) {
+          const full = join(dir, entry);
+          let stats;
+          try {
+            stats = lstatSync(full);
+          } catch {
+            continue;
+          }
+          if (stats.isSymbolicLink()) {
+            console.log(`Stripping nested symlink ${full}`);
+            rmSync(full, { force: true });
+          } else if (stats.isDirectory()) {
+            stripNestedSymlinks(full);
+          }
+        }
+      };
+      for (const dep of nativeModuleDependenciesToPackage) {
+        const depPath = join(localNodeModules, dep);
+        if (existsSync(depPath)) {
+          stripNestedSymlinks(depPath);
+        }
+      }
+
       // Prune onnxruntime-node to keep only the required binary
       const targetPlatform = platform;
       const targetArch = arch;
@@ -341,6 +381,7 @@ const config: ForgeConfig = {
     },
     postPackage: async (_forgeConfig, options) => {
       const { outputPaths, platform } = options;
+
       // =====================================================================
       // Bundle VC++ Runtime DLLs for Windows
       // =====================================================================
@@ -447,10 +488,11 @@ const config: ForgeConfig = {
                   hardenedRuntime: true,
                 };
               }
-              // Use default entitlements for everything else
-              // https://www.npmjs.com/package/@electron/osx-sign#opts
-              // !still need to do any
-              return null as any;
+              // Main app + helpers get hardened runtime + JIT/microphone/etc.
+              return {
+                entitlements: "./entitlements.mac.plist",
+                hardenedRuntime: true,
+              };
             },
           },
           // Notarization for macOS
