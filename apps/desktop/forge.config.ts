@@ -665,8 +665,11 @@ const config: ForgeConfig = {
         owner: "teaguexiao",
         name: "sayd-desktop",
       },
-      prerelease: true,
-      draft: true, // Create draft releases first for review
+      // update.electronjs.org only serves the latest non-prerelease, non-draft
+      // release. Keep `draft: true` so each build lands as a draft for manual
+      // review, then publish normally to roll it out to existing installs.
+      prerelease: false,
+      draft: true,
     }),
   ],
 };
