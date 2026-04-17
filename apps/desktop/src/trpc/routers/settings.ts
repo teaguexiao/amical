@@ -25,7 +25,6 @@ const SetShortcutSchema = z.object({
     "pushToTalk",
     "toggleRecording",
     "pasteLastTranscript",
-    "newNote",
   ]),
   shortcut: z.array(z.number()),
 });
@@ -72,7 +71,6 @@ const AppPreferencesSchema = z.object({
   showInDock: z.boolean().optional(),
   muteSystemAudio: z.boolean().optional(),
   muteDictationSounds: z.boolean().optional(),
-  autoDictateOnNewNote: z.boolean().optional(),
   preserveClipboard: z.boolean().optional(),
 });
 

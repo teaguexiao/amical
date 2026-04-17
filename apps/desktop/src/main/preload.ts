@@ -115,15 +115,6 @@ const api: ElectronAPI = {
   // the renderer, because Chromium can block popups unless the call is made
   // synchronously in direct response to a user gesture (click/keypress).
   openExternal: (url: string) => ipcRenderer.invoke("open-external", url),
-
-  // Notes API - Yjs synchronization only
-  notes: {
-    saveYjsUpdate: (noteId: number, update: ArrayBuffer) =>
-      ipcRenderer.invoke("notes:saveYjsUpdate", noteId, update),
-
-    loadYjsUpdates: (noteId: number) =>
-      ipcRenderer.invoke("notes:loadYjsUpdates", noteId),
-  },
 };
 
 contextBridge.exposeInMainWorld("electronAPI", api);

@@ -337,10 +337,6 @@
   },
   "settings": {
     "nav": {
-      "notes": {
-        "title": "Notas",
-        "description": "Administra tus notas"
-      },
       "preferences": {
         "title": "Preferencias",
         "description": "Configura las preferencias generales y el comportamiento de la aplicación"
@@ -385,10 +381,9 @@
     "search": {
       "buttonLabel": "Buscar",
       "buttonPlaceholder": "Buscar...",
-      "inputPlaceholder": "Buscar en configuración y notas...",
+      "inputPlaceholder": "Buscar en configuración...",
       "noResults": "No se encontraron resultados.",
-      "settingsHeading": "Configuración",
-      "notesHeading": "Notas"
+      "settingsHeading": "Configuración"
     },
     "preferences": {
       "title": "Preferencias",
@@ -416,10 +411,6 @@
       "muteDictationSounds": {
         "label": "Silenciar sonidos de dictado",
         "description": "Desactivar los sonidos de inicio y fin al grabar"
-      },
-      "autoDictateOnNewNote": {
-        "label": "Dictar automáticamente en nota nueva",
-        "description": "Iniciar el dictado automáticamente al crear una nueva nota"
       },
       "language": {
         "label": "Idioma",
@@ -506,7 +497,6 @@
           "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente:",
           "items": {
             "transcriptions": "Todas tus transcripciones",
-            "notes": "Todas tus notas",
             "vocabulary": "Tu vocabulario",
             "settings": "Toda la configuración y preferencias",
             "models": "Modelos descargados"
@@ -679,8 +669,7 @@
       "toast": {
         "pushToTalkUpdated": "Atajo de pulsar para hablar actualizado",
         "handsFreeUpdated": "Atajo de modo manos libres actualizado",
-        "pasteLastTranscriptUpdated": "Atajo de pegar última transcripción actualizado",
-        "newNoteUpdated": "Atajo de nueva nota actualizado"
+        "pasteLastTranscriptUpdated": "Atajo de pegar última transcripción actualizado"
       },
       "pushToTalk": {
         "label": "Pulsar para hablar",
@@ -694,10 +683,6 @@
         "label": "Pegar última transcripción",
         "description": "Pega tu transcripción más reciente en la aplicación activa"
       },
-      "newNote": {
-        "label": "Nueva nota",
-        "description": "Abre la ventana de notas y crea una nota nueva"
-      },
       "validation": {
         "noKeysDetected": "No se detectaron teclas",
         "tooManyKeys": "Demasiadas teclas: usa {{max}} o menos",
@@ -710,55 +695,6 @@
       },
       "input": {
         "pressKeys": "Presiona las teclas..."
-      }
-    },
-    "notes": {
-      "create": "Crear nota",
-      "defaultTitleWithDate": "Nota - {{date}}",
-      "untitledTitle": "Nota sin título",
-      "empty": {
-        "title": "Aún no hay notas",
-        "description": "Crea tu primera nota para comenzar"
-      },
-      "notFound": "Nota no encontrada",
-      "backToNotes": "Volver a notas",
-      "toast": {
-        "created": "Nota creada",
-        "createFailed": "No se pudo crear la nota: {{message}}",
-        "emojiUpdated": "Emoji actualizado",
-        "emojiUpdateFailed": "No se pudo actualizar el emoji: {{message}}",
-        "deleted": "Nota eliminada",
-        "deleteFailed": "No se pudo eliminar la nota: {{message}}",
-        "saveFailed": "No se pudieron guardar los cambios",
-        "upgradedToRichNotes": "Tus notas han sido actualizadas a notas enriquecidas con formato markdown.",
-        "loadFailed": "No se pudo cargar la nota"
-      },
-      "note": {
-        "removeEmoji": "Quitar emoji",
-        "titlePlaceholder": "Título de la nota...",
-        "bodyPlaceholder": "Comienza a escribir tu nota...",
-        "edited": "Editado {{date}}",
-        "actions": {
-          "openInNotesWindow": "Abrir en ventana de notas",
-          "delete": "Eliminar"
-        },
-        "deleteDialog": {
-          "title": "Eliminar nota",
-          "description": "¿Estás seguro de que quieres eliminar \"{{title}}\"? Esta acción no se puede deshacer y la nota se eliminará permanentemente.",
-          "cancel": "Cancelar",
-          "deleting": "Eliminando...",
-          "confirm": "Eliminar nota"
-        }
-      },
-      "upcomingEvents": {
-        "title": "Próximos eventos",
-        "takeNotes": "Tomar notas",
-        "empty": "No hay próximos eventos",
-        "connect": {
-          "title": "Conecta tu calendario",
-          "description": "Conecta tu calendario para comenzar",
-          "button": "Conectar calendario"
-        }
       }
     },
     "vocabulary": {

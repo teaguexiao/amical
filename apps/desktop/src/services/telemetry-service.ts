@@ -11,7 +11,7 @@ import type {
   OnboardingCompletedEvent,
   OnboardingAbandonedEvent,
   NativeHelperCrashedEvent,
-  NoteCreatedEvent,
+
   TranscriptionReportedEvent,
   WidgetNotificationShownEvent,
 } from "../types/telemetry-events";
@@ -336,22 +336,6 @@ export class TelemetryService {
     });
 
     logger.main.debug("Tracked native helper crash", props);
-  }
-
-  // ============================================================================
-  // Notes Events
-  // ============================================================================
-
-  trackNoteCreated(props: NoteCreatedEvent): void {
-    if (!this.client.posthog || !this.enabled) return;
-
-    this.client.posthog.capture({
-      distinctId: this.client.machineId,
-      event: "note_created",
-      properties: { ...props, ...this.persistedProperties },
-    });
-
-    logger.main.debug("Tracked note created", props);
   }
 
   // ============================================================================

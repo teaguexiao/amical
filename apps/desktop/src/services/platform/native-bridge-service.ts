@@ -820,7 +820,6 @@ export class NativeBridge extends EventEmitter {
         pushToTalk: shortcuts.pushToTalk,
         toggleRecording: shortcuts.toggleRecording,
         pasteLastTranscript: shortcuts.pasteLastTranscript,
-        newNote: shortcuts.newNote,
         success: result.success,
       });
       return result.success;

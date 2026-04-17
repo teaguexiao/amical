@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NotebookPen, Square } from "lucide-react";
+import { Square } from "lucide-react";
 import { Waveform } from "@/components/Waveform";
 import { useRecording } from "@/hooks/useRecording";
-import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { api } from "@/trpc/react";
-import { NOTE_WINDOW_FEATURE_FLAG } from "@/utils/feature-flags";
 import { useTranslation } from "react-i18next";
 
 const NUM_WAVEFORM_BARS = 6; // Fewer bars to make room for stop button
@@ -61,9 +59,6 @@ export const FloatingButton: React.FC = () => {
 
   // tRPC mutation to control widget mouse events
   const setIgnoreMouseEvents = api.widget.setIgnoreMouseEvents.useMutation();
-  const openNotesWindow = api.widget.openNotesWindow.useMutation();
-  const noteWindowFeatureFlag = useFeatureFlag(NOTE_WINDOW_FEATURE_FLAG);
-
   // Log component initialization
   useEffect(() => {
     console.log("FloatingButton component initialized");
@@ -94,8 +89,6 @@ export const FloatingButton: React.FC = () => {
     recordingStatus.state === "starting";
   const isStopping = recordingStatus.state === "stopping";
   const isHandsFreeMode = recordingStatus.mode === "hands-free";
-  const isNoteWindowEnabled = noteWindowFeatureFlag.enabled;
-
   // Track when recording state changes to "recording" after a click
   useEffect(() => {
     if (recordingStatus.state === "recording" && clickTimeRef.current) {
@@ -138,19 +131,6 @@ export const FloatingButton: React.FC = () => {
     await stopRecording();
   };
 
-  const handleOpenNotesClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!isNoteWindowEnabled) {
-      return;
-    }
-    try {
-      await openNotesWindow.mutateAsync();
-    } catch (error) {
-      console.error("Failed to open notes window widget", error);
-    }
-  };
-
   // Debounced mouse leave handler
   const handleMouseLeave = async () => {
     if (leaveTimeoutRef.current) {
@@ -187,13 +167,9 @@ export const FloatingButton: React.FC = () => {
   };
 
   const isWidgetActive = isRecording || isStopping || isHovered;
-  const showNotesAction =
-    isNoteWindowEnabled && isHovered && !isRecording && !isStopping;
   const sizeClass = !isWidgetActive
     ? "h-[8px] w-[48px]"
-    : showNotesAction
-      ? "h-[24px] w-[124px]"
-      : "h-[24px] w-[96px]";
+    : "h-[24px] w-[96px]";
 
   // Function to render widget content based on state
   const renderWidgetContent = () => {
@@ -234,17 +210,6 @@ export const FloatingButton: React.FC = () => {
             voiceDetected={voiceDetected}
           />
         </button>
-
-        {showNotesAction && (
-          <button
-            className="h-full px-2 flex items-center justify-center text-white/80 hover:text-white transition-colors"
-            onClick={handleOpenNotesClick}
-            aria-label={t("settings.notes.note.actions.openInNotesWindow")}
-            title={t("settings.notes.note.actions.openInNotesWindow")}
-          >
-            <NotebookPen className="w-[14px] h-[14px]" />
-          </button>
-        )}
       </>
     );
   };

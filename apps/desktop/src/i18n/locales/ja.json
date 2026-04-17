@@ -337,10 +337,6 @@
   },
   "settings": {
     "nav": {
-      "notes": {
-        "title": "ノート",
-        "description": "ノートを管理"
-      },
       "preferences": {
         "title": "環境設定",
         "description": "アプリケーション全般の設定と動作を構成"
@@ -385,10 +381,9 @@
     "search": {
       "buttonLabel": "検索",
       "buttonPlaceholder": "検索...",
-      "inputPlaceholder": "設定とノートを検索...",
+      "inputPlaceholder": "設定を検索...",
       "noResults": "結果が見つかりません。",
-      "settingsHeading": "設定",
-      "notesHeading": "ノート"
+      "settingsHeading": "設定"
     },
     "preferences": {
       "title": "環境設定",
@@ -416,10 +411,6 @@
       "muteDictationSounds": {
         "label": "ディクテーション音をミュート",
         "description": "録音開始・終了時のサウンドを無効にする"
-      },
-      "autoDictateOnNewNote": {
-        "label": "新しいノートで自動音声入力",
-        "description": "新しいノートを作成した時に自動的に音声入力を開始"
       },
       "language": {
         "label": "言語",
@@ -506,7 +497,6 @@
           "description": "この操作は元に戻せません。以下が完全に削除されます：",
           "items": {
             "transcriptions": "すべての文字起こし",
-            "notes": "すべてのノート",
             "vocabulary": "カスタム辞書",
             "settings": "すべての設定と環境設定",
             "models": "ダウンロードしたモデル"
@@ -679,8 +669,7 @@
       "toast": {
         "pushToTalkUpdated": "プッシュトゥトークのショートカットを更新しました",
         "handsFreeUpdated": "ハンズフリーモードのショートカットを更新しました",
-        "pasteLastTranscriptUpdated": "最新の文字起こしを貼り付けるショートカットを更新しました",
-        "newNoteUpdated": "新規ノートのショートカットを更新しました"
+        "pasteLastTranscriptUpdated": "最新の文字起こしを貼り付けるショートカットを更新しました"
       },
       "pushToTalk": {
         "label": "プッシュトゥトーク",
@@ -694,10 +683,6 @@
         "label": "最後の文字起こしを貼り付け",
         "description": "最新の文字起こしをアクティブなアプリに貼り付けます"
       },
-      "newNote": {
-        "label": "新規ノート",
-        "description": "ノートウィンドウを開いて新しいノートを作成します"
-      },
       "validation": {
         "noKeysDetected": "キーが検出されません",
         "tooManyKeys": "キーが多すぎます - {{max}}個以下にしてください",
@@ -710,55 +695,6 @@
       },
       "input": {
         "pressKeys": "キーを押してください..."
-      }
-    },
-    "notes": {
-      "create": "ノートを作成",
-      "defaultTitleWithDate": "ノート - {{date}}",
-      "untitledTitle": "無題のノート",
-      "empty": {
-        "title": "ノートはまだありません",
-        "description": "最初のノートを作成して始めましょう"
-      },
-      "notFound": "ノートが見つかりません",
-      "backToNotes": "ノートに戻る",
-      "toast": {
-        "created": "ノートを作成しました",
-        "createFailed": "ノートの作成に失敗しました: {{message}}",
-        "emojiUpdated": "絵文字を更新しました",
-        "emojiUpdateFailed": "絵文字の更新に失敗しました: {{message}}",
-        "deleted": "ノートを削除しました",
-        "deleteFailed": "ノートの削除に失敗しました: {{message}}",
-        "saveFailed": "変更の保存に失敗しました",
-        "upgradedToRichNotes": "ノートがマークダウンフォーマット対応のリッチノートにアップグレードされました。",
-        "loadFailed": "ノートの読み込みに失敗しました"
-      },
-      "note": {
-        "removeEmoji": "絵文字を削除",
-        "titlePlaceholder": "ノートのタイトル...",
-        "bodyPlaceholder": "ノートを書き始めましょう...",
-        "edited": "{{date}}に編集",
-        "actions": {
-          "openInNotesWindow": "ノートウィンドウで開く",
-          "delete": "削除"
-        },
-        "deleteDialog": {
-          "title": "ノートを削除",
-          "description": "「{{title}}」を削除してもよろしいですか？この操作は元に戻せず、ノートは完全に削除されます。",
-          "cancel": "キャンセル",
-          "deleting": "削除中...",
-          "confirm": "ノートを削除"
-        }
-      },
-      "upcomingEvents": {
-        "title": "今後のイベント",
-        "takeNotes": "メモを取る",
-        "empty": "今後のイベントはありません",
-        "connect": {
-          "title": "カレンダーを接続",
-          "description": "カレンダーを接続して始めましょう",
-          "button": "カレンダーを接続"
-        }
       }
     },
     "vocabulary": {

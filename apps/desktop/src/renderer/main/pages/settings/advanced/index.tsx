@@ -443,9 +443,6 @@ export default function AdvancedSettingsPage() {
                           )}
                         </li>
                         <li>
-                          {t("settings.advanced.reset.dialog.items.notes")}
-                        </li>
-                        <li>
                           {t("settings.advanced.reset.dialog.items.vocabulary")}
                         </li>
                         <li>

@@ -21,7 +21,6 @@ export interface ShortcutsConfig {
   pushToTalk: number[];
   toggleRecording: number[];
   pasteLastTranscript: number[];
-  newNote: number[];
 }
 
 export interface AppPreferences {
@@ -31,7 +30,6 @@ export interface AppPreferences {
   showInDock: boolean;
   muteSystemAudio: boolean;
   muteDictationSounds: boolean;
-  autoDictateOnNewNote: boolean;
   preserveClipboard: boolean;
 }
 
@@ -162,7 +160,6 @@ export class SettingsService extends EventEmitter {
       pushToTalk: shortcuts?.pushToTalk ?? [],
       toggleRecording: shortcuts?.toggleRecording ?? [],
       pasteLastTranscript: shortcuts?.pasteLastTranscript ?? [],
-      newNote: shortcuts?.newNote ?? [],
     };
   }
 
@@ -181,7 +178,6 @@ export class SettingsService extends EventEmitter {
       pasteLastTranscript: shortcuts.pasteLastTranscript?.length
         ? shortcuts.pasteLastTranscript
         : undefined,
-      newNote: shortcuts.newNote?.length ? shortcuts.newNote : undefined,
     };
     await updateSettingsSection("shortcuts", dataToStore);
   }
@@ -374,7 +370,6 @@ export class SettingsService extends EventEmitter {
       showInDock: preferences?.showInDock ?? true,
       muteSystemAudio: preferences?.muteSystemAudio ?? true,
       muteDictationSounds: preferences?.muteDictationSounds ?? false,
-      autoDictateOnNewNote: preferences?.autoDictateOnNewNote ?? false,
       preserveClipboard: preferences?.preserveClipboard ?? true,
     };
   }

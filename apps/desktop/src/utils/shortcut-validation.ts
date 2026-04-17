@@ -18,8 +18,7 @@ import {
 export type ShortcutType =
   | "pushToTalk"
   | "toggleRecording"
-  | "pasteLastTranscript"
-  | "newNote";
+  | "pasteLastTranscript";
 
 export interface ValidationContext {
   candidateShortcut: number[];

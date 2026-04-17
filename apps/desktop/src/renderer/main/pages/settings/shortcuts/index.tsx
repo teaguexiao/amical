@@ -15,9 +15,8 @@ export function ShortcutsSettingsPage() {
   >([]);
   const [pasteLastTranscriptShortcut, setPasteLastTranscriptShortcut] =
     useState<number[]>([]);
-  const [newNoteShortcut, setNewNoteShortcut] = useState<number[]>([]);
   const [recordingShortcut, setRecordingShortcut] = useState<
-    "pushToTalk" | "toggleRecording" | "pasteLastTranscript" | "newNote" | null
+    "pushToTalk" | "toggleRecording" | "pasteLastTranscript" | null
   >(null);
 
   // tRPC queries and mutations
@@ -33,7 +32,6 @@ export function ShortcutsSettingsPage() {
           setPushToTalkShortcut(cached.pushToTalk);
           setToggleRecordingShortcut(cached.toggleRecording);
           setPasteLastTranscriptShortcut(cached.pasteLastTranscript);
-          setNewNoteShortcut(cached.newNote);
         } else {
           utils.settings.getShortcuts.invalidate();
         }
@@ -52,9 +50,9 @@ export function ShortcutsSettingsPage() {
           pasteLastTranscript: t(
             "settings.shortcuts.toast.pasteLastTranscriptUpdated",
           ),
-          newNote: t("settings.shortcuts.toast.newNoteUpdated"),
         } as const;
-        toast.success(successMessages[variables.type]);
+        const msg = successMessages[variables.type as keyof typeof successMessages];
+        if (msg) toast.success(msg);
       }
     },
     onError: (error) => {
@@ -65,7 +63,6 @@ export function ShortcutsSettingsPage() {
         setPushToTalkShortcut(cached.pushToTalk);
         setToggleRecordingShortcut(cached.toggleRecording);
         setPasteLastTranscriptShortcut(cached.pasteLastTranscript);
-        setNewNoteShortcut(cached.newNote);
       } else {
         utils.settings.getShortcuts.invalidate();
       }
@@ -78,7 +75,6 @@ export function ShortcutsSettingsPage() {
       setPushToTalkShortcut(shortcutsQuery.data.pushToTalk);
       setToggleRecordingShortcut(shortcutsQuery.data.toggleRecording);
       setPasteLastTranscriptShortcut(shortcutsQuery.data.pasteLastTranscript);
-      setNewNoteShortcut(shortcutsQuery.data.newNote);
     }
   }, [shortcutsQuery.data]);
 
@@ -102,14 +98,6 @@ export function ShortcutsSettingsPage() {
     setPasteLastTranscriptShortcut(shortcut);
     setShortcutMutation.mutate({
       type: "pasteLastTranscript",
-      shortcut: shortcut,
-    });
-  };
-
-  const handleNewNoteChange = (shortcut: number[]) => {
-    setNewNoteShortcut(shortcut);
-    setShortcutMutation.mutate({
-      type: "newNote",
       shortcut: shortcut,
     });
   };
@@ -203,29 +191,6 @@ export function ShortcutsSettingsPage() {
               </div>
             </div>
 
-            <div>
-              <Separator className="my-4" />
-              <div className="flex flex-col md:flex-row md:justify-between gap-4">
-                <div>
-                  <Label className="text-base font-semibold text-foreground">
-                    {t("settings.shortcuts.newNote.label")}
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                    {t("settings.shortcuts.newNote.description")}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 items-end min-w-[260px]">
-                  <ShortcutInput
-                    value={newNoteShortcut}
-                    onChange={handleNewNoteChange}
-                    isRecordingShortcut={recordingShortcut === "newNote"}
-                    onRecordingShortcutChange={(recording) =>
-                      setRecordingShortcut(recording ? "newNote" : null)
-                    }
-                  />
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

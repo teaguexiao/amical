@@ -23,7 +23,6 @@ interface ShortcutConfig {
   pushToTalk: number[];
   toggleRecording: number[];
   pasteLastTranscript: number[];
-  newNote: number[];
 }
 
 export class ShortcutManager extends EventEmitter {
@@ -32,7 +31,6 @@ export class ShortcutManager extends EventEmitter {
     pushToTalk: [],
     toggleRecording: [],
     pasteLastTranscript: [],
-    newNote: [],
   };
   private settingsService: SettingsService;
   private nativeBridge: NativeBridge;
@@ -42,7 +40,6 @@ export class ShortcutManager extends EventEmitter {
   private exactMatchState = {
     toggleRecording: false,
     pasteLastTranscript: false,
-    newNote: false,
   };
 
   constructor(settingsService: SettingsService, nativeBridge: NativeBridge) {
@@ -79,7 +76,6 @@ export class ShortcutManager extends EventEmitter {
         pushToTalk: this.shortcuts.pushToTalk,
         toggleRecording: this.shortcuts.toggleRecording,
         pasteLastTranscript: this.shortcuts.pasteLastTranscript,
-        newNote: this.shortcuts.newNote,
       });
       log.info("Shortcuts synced to native helper");
     } catch (error) {
@@ -185,7 +181,6 @@ export class ShortcutManager extends EventEmitter {
     if (isRecording) {
       this.exactMatchState.toggleRecording = false;
       this.exactMatchState.pasteLastTranscript = false;
-      this.exactMatchState.newNote = false;
     }
     log.info("Shortcut recording state changed", { isRecording });
   }
@@ -294,12 +289,6 @@ export class ShortcutManager extends EventEmitter {
     }
     this.exactMatchState.pasteLastTranscript = pasteMatch;
 
-    // Check open notes window shortcut
-    const newNoteMatch = this.isNewNoteShortcutPressed();
-    if (newNoteMatch && !this.exactMatchState.newNote) {
-      this.emit("open-notes-window-triggered");
-    }
-    this.exactMatchState.newNote = newNoteMatch;
   }
 
   private isPTTShortcutPressed(): boolean {
@@ -341,21 +330,6 @@ export class ShortcutManager extends EventEmitter {
     return (
       pasteKeys.length === activeKeysList.length &&
       pasteKeys.every((keyCode) => activeKeysList.includes(keyCode))
-    );
-  }
-
-  private isNewNoteShortcutPressed(): boolean {
-    const newNoteKeys = this.shortcuts.newNote;
-    if (!newNoteKeys || newNoteKeys.length === 0) {
-      return false;
-    }
-
-    const activeKeysList = this.getActiveKeys();
-
-    // Exact match - only these keys pressed, no extra keys
-    return (
-      newNoteKeys.length === activeKeysList.length &&
-      newNoteKeys.every((keyCode) => activeKeysList.includes(keyCode))
     );
   }
 

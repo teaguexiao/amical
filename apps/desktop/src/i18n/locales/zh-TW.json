@@ -337,10 +337,6 @@
   },
   "settings": {
     "nav": {
-      "notes": {
-        "title": "筆記",
-        "description": "您的筆記管理"
-      },
       "preferences": {
         "title": "偏好設定",
         "description": "應用程式的一般偏好設定和行為"
@@ -385,10 +381,9 @@
     "search": {
       "buttonLabel": "搜尋",
       "buttonPlaceholder": "搜尋...",
-      "inputPlaceholder": "搜尋設定與筆記...",
+      "inputPlaceholder": "搜尋設定...",
       "noResults": "找不到結果。",
-      "settingsHeading": "設定",
-      "notesHeading": "筆記"
+      "settingsHeading": "設定"
     },
     "preferences": {
       "title": "偏好設定",
@@ -416,10 +411,6 @@
       "muteDictationSounds": {
         "label": "將聽寫音效靜音",
         "description": "停用錄音開始和停止的音效"
-      },
-      "autoDictateOnNewNote": {
-        "label": "新筆記自動聽寫",
-        "description": "建立新筆記時自動開始聽寫"
       },
       "language": {
         "label": "語言",
@@ -506,7 +497,6 @@
           "description": "此動作無法復原。這會永久刪除：",
           "items": {
             "transcriptions": "您所有的轉錄紀錄",
-            "notes": "您所有的筆記",
             "vocabulary": "您的詞彙庫",
             "settings": "所有設定與偏好",
             "models": "已下載的模型"
@@ -679,8 +669,7 @@
       "toast": {
         "pushToTalkUpdated": "「按住說話」快捷鍵已更新",
         "handsFreeUpdated": "免持模式快捷鍵已更新",
-        "pasteLastTranscriptUpdated": "貼上最後一次轉錄內容的快捷鍵已更新",
-        "newNoteUpdated": "建立新筆記的快捷鍵已更新"
+        "pasteLastTranscriptUpdated": "貼上最後一次轉錄內容的快捷鍵已更新"
       },
       "pushToTalk": {
         "label": "按住說話",
@@ -694,10 +683,6 @@
         "label": "貼上最後的轉錄",
         "description": "將您最近的轉錄結果貼上到當前的應用程式中"
       },
-      "newNote": {
-        "label": "新筆記",
-        "description": "開啟筆記視窗並建立新筆記"
-      },
       "validation": {
         "noKeysDetected": "未偵測到任何按鍵",
         "tooManyKeys": "按鍵數量過多 - 請使用 {{max}} 個或更少",
@@ -710,55 +695,6 @@
       },
       "input": {
         "pressKeys": "請按下按鍵..."
-      }
-    },
-    "notes": {
-      "create": "建立筆記",
-      "defaultTitleWithDate": "筆記 - {{date}}",
-      "untitledTitle": "未命名筆記",
-      "empty": {
-        "title": "尚無筆記",
-        "description": "開始建立您的第一本筆記吧"
-      },
-      "notFound": "找不到該筆記",
-      "backToNotes": "返回清單",
-      "toast": {
-        "created": "已建立筆記",
-        "createFailed": "建立筆記失敗：{{message}}",
-        "emojiUpdated": "表情符號更新完畢",
-        "emojiUpdateFailed": "更新表情符號時發生錯誤：{{message}}",
-        "deleted": "筆記已刪除",
-        "deleteFailed": "無法刪除該筆記：{{message}}",
-        "saveFailed": "無法儲存更改",
-        "upgradedToRichNotes": "您的筆記已升級為支援 Markdown 格式的豐富文字筆記。",
-        "loadFailed": "無法載入此筆記"
-      },
-      "note": {
-        "removeEmoji": "移除表情符號",
-        "titlePlaceholder": "筆記標題...",
-        "bodyPlaceholder": "開始寫筆記...",
-        "edited": "編輯於 {{date}}",
-        "actions": {
-          "openInNotesWindow": "在筆記視窗中開啟",
-          "delete": "刪除"
-        },
-        "deleteDialog": {
-          "title": "刪除筆記",
-          "description": "確認要刪除「{{title}}」嗎？此動作不可復原，筆記將被永久移除。",
-          "cancel": "取消",
-          "deleting": "刪除中...",
-          "confirm": "刪除筆記"
-        }
-      },
-      "upcomingEvents": {
-        "title": "即將到來的活動",
-        "takeNotes": "記筆記",
-        "empty": "尚無任何即將到來的活動",
-        "connect": {
-          "title": "連結您的日曆",
-          "description": "連結日曆即可開始",
-          "button": "連接日曆"
-        }
       }
     },
     "vocabulary": {

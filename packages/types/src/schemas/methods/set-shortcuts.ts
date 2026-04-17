@@ -7,7 +7,6 @@ export const SetShortcutsParamsSchema = z.object({
   pushToTalk: z.array(z.number().int()),
   toggleRecording: z.array(z.number().int()),
   pasteLastTranscript: z.array(z.number().int()),
-  newNote: z.array(z.number().int()),
 });
 export type SetShortcutsParams = z.infer<typeof SetShortcutsParamsSchema>;
 

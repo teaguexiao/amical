@@ -10,12 +10,9 @@ import path from "node:path";
 import { logger } from "../logger";
 import type { SettingsService } from "../../services/settings-service";
 import type { createIPCHandler } from "electron-trpc-experimental/main";
-import { NotesWindowController } from "./windows/notes-window-controller";
-
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 declare const WIDGET_WINDOW_VITE_NAME: string;
-declare const NOTES_WIDGET_WINDOW_VITE_NAME: string;
 declare const ONBOARDING_WINDOW_VITE_NAME: string;
 
 export class WindowManager {
@@ -23,7 +20,6 @@ export class WindowManager {
   private static readonly WIDGET_MAX_HEIGHT = 320 as const;
   private mainWindow: BrowserWindow | null = null;
   private widgetWindow: BrowserWindow | null = null;
-  private notesWindowController: NotesWindowController;
   private onboardingWindow: BrowserWindow | null = null;
   private widgetDisplayId: number | null = null;
   private cursorPollingInterval: NodeJS.Timeout | null = null;
@@ -94,26 +90,6 @@ export class WindowManager {
     private settingsService: SettingsService,
     private trpcHandler: ReturnType<typeof createIPCHandler>,
   ) {
-    this.notesWindowController = new NotesWindowController({
-      settingsService: this.settingsService,
-      trpcHandler: this.trpcHandler,
-      getWidgetWindow: () => this.widgetWindow,
-      getActiveWidgetDisplayWorkArea: () =>
-        this.getActiveWidgetDisplayWorkArea(),
-      setWidgetIgnoreMouseEvents: (ignore) =>
-        this.setWidgetIgnoreMouseEvents(ignore),
-      getWidgetEdgeInset: () => this.widgetEdgeInset,
-      setWidgetDisplayId: (displayId) => {
-        this.widgetDisplayId = displayId;
-      },
-      preloadPath: path.join(__dirname, "preload.js"),
-      notesWidgetFilePath: path.join(
-        __dirname,
-        `../renderer/${NOTES_WIDGET_WINDOW_VITE_NAME}/notes-widget.html`,
-      ),
-      mainWindowViteDevServerUrl: MAIN_WINDOW_VITE_DEV_SERVER_URL || undefined,
-    });
-
     logger.main.info("WindowManager created with dependencies");
   }
 
@@ -621,28 +597,12 @@ export class WindowManager {
     this.widgetWindow.setIgnoreMouseEvents(ignore, { forward: true });
   }
 
-  isNotesWindowVisible(): boolean {
-    return this.notesWindowController.isVisible();
-  }
-
-  closeNotesWindow(): void {
-    this.notesWindowController.close();
-  }
-
-  openNotesWindow(noteId?: number): void {
-    this.notesWindowController.open(noteId);
-  }
-
   getMainWindow(): BrowserWindow | null {
     return this.mainWindow;
   }
 
   getWidgetWindow(): BrowserWindow | null {
     return this.widgetWindow;
-  }
-
-  getNotesWindow(): BrowserWindow | null {
-    return this.notesWindowController.getWindow();
   }
 
   getOnboardingWindow(): BrowserWindow | null {
@@ -653,7 +613,6 @@ export class WindowManager {
     return [
       this.mainWindow,
       this.widgetWindow,
-      this.notesWindowController.getWindow(),
       this.onboardingWindow,
     ];
   }
@@ -674,8 +633,6 @@ export class WindowManager {
   }
 
   cleanup(): void {
-    this.notesWindowController.cleanup();
-
     // Stop cursor polling
     if (this.cursorPollingInterval) {
       clearInterval(this.cursorPollingInterval);

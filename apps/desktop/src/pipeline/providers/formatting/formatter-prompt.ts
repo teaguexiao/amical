@@ -7,7 +7,7 @@ import { GetAccessibilityContextResult } from "@amical/types";
 /**
  * Application type for formatting context
  */
-export type AppType = "email" | "chat" | "notes" | "amical-notes" | "default";
+export type AppType = "email" | "chat" | "notes" | "default";
 
 /**
  * App-type specific formatting rules inserted into the system prompt
@@ -25,19 +25,6 @@ const APP_TYPE_RULES: Record<AppType, string> = {
 - Format action items and tasks clearly
 - Use concise phrasing - notes should be scannable, not prose-heavy
 - Preserve hierarchical relationships (e.g., main topics vs sub-items)`,
-  "amical-notes": `- Format output as clean Markdown
-- Adapt formatting to content length and complexity:
-  - For short, simple content (1-2 sentences): use a single paragraph, no special formatting
-  - For medium content with distinct points: use bullet points or numbered lists
-  - For longer content with topics: use headers (##, ###) to organize sections
-  - For mixed content: combine paragraphs, lists, and headers as appropriate
-- Use bullet points (-) for unordered lists of items, ideas, or notes
-- Use numbered lists (1. 2. 3.) for sequential steps, priorities, or ranked items
-- Use headers for distinct topics or sections (## for main sections, ### for subsections)
-- Use bold (**text**) for emphasis on key terms or action items
-- Use code blocks (\`\`\`) for technical content, commands, or code snippets
-- Keep formatting minimal and purposeful - don't over-format simple content
-- Preserve natural speech flow while adding structure where it improves clarity`,
   default: "",
 };
 
@@ -91,21 +78,6 @@ Action Items:
 - Respond to emails
 - Review pull requests
 - Update documentation</formatted_text>`,
-  "amical-notes": `### Markdown structure for multi-point notes:
-<input>quick recap we decided to ship friday risks are perf and we need to update docs next steps benchmark and write docs</input>
-<formatted_text>## Recap
-
-We decided to ship on Friday.
-
-## Risks
-
-- Performance
-- Documentation updates
-
-## Next steps
-
-- Benchmark performance
-- Update docs</formatted_text>`,
   default: `### Filler removal — preserve all content words:
 <input>so the main issue is that um we need more time</input>
 <formatted_text>So, the main issue is that we need more time.</formatted_text>
@@ -367,9 +339,9 @@ export function detectApplicationType(
 
   const bundleId = accessibilityContext.context.application.bundleIdentifier;
 
-  // Sayd's own app: align to Axis prompt format but preserve appType value.
+  // Sayd's own app uses default formatting.
   if (bundleId === "com.amical.desktop") {
-    return "amical-notes";
+    return "default";
   }
 
   // Check if it's a browser

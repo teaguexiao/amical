@@ -337,10 +337,6 @@
   },
   "settings": {
     "nav": {
-      "notes": {
-        "title": "Notes",
-        "description": "Manage your notes"
-      },
       "preferences": {
         "title": "Preferences",
         "description": "Configure general application preferences and behavior"
@@ -385,10 +381,9 @@
     "search": {
       "buttonLabel": "Search",
       "buttonPlaceholder": "Search...",
-      "inputPlaceholder": "Search settings and notes...",
+      "inputPlaceholder": "Search settings...",
       "noResults": "No results found.",
-      "settingsHeading": "Settings",
-      "notesHeading": "Notes"
+      "settingsHeading": "Settings"
     },
     "preferences": {
       "title": "Preferences",
@@ -416,10 +411,6 @@
       "muteDictationSounds": {
         "label": "Mute dictation sounds",
         "description": "Disable the start and stop sounds when recording"
-      },
-      "autoDictateOnNewNote": {
-        "label": "Auto-dictate on new note",
-        "description": "Automatically start dictation when creating a new note"
       },
       "language": {
         "label": "Language",
@@ -517,7 +508,6 @@
           "description": "This action cannot be undone. This will permanently delete:",
           "items": {
             "transcriptions": "All your transcriptions",
-            "notes": "All your notes",
             "vocabulary": "Your vocabulary",
             "settings": "All settings and preferences",
             "models": "Downloaded models"
@@ -702,7 +692,6 @@
         "pushToTalkUpdated": "Push to talk shortcut updated",
         "handsFreeUpdated": "Hands-free mode shortcut updated",
         "pasteLastTranscriptUpdated": "Paste last transcript shortcut updated",
-        "newNoteUpdated": "New note shortcut updated"
       },
       "pushToTalk": {
         "label": "Push to talk",
@@ -716,10 +705,6 @@
         "label": "Paste last transcript",
         "description": "Paste your most recent transcription into the active app"
       },
-      "newNote": {
-        "label": "New note",
-        "description": "Open notes window and create a new note"
-      },
       "validation": {
         "noKeysDetected": "No keys detected",
         "tooManyKeys": "Too many keys - use {{max}} or fewer",
@@ -732,55 +717,6 @@
       },
       "input": {
         "pressKeys": "Press keys..."
-      }
-    },
-    "notes": {
-      "create": "Create note",
-      "defaultTitleWithDate": "Note - {{date}}",
-      "untitledTitle": "Untitled Note",
-      "empty": {
-        "title": "No notes yet",
-        "description": "Create your first note to get started"
-      },
-      "notFound": "Note not found",
-      "backToNotes": "Back to notes",
-      "toast": {
-        "created": "Note created",
-        "createFailed": "Failed to create note: {{message}}",
-        "emojiUpdated": "Emoji updated",
-        "emojiUpdateFailed": "Failed to update emoji: {{message}}",
-        "deleted": "Note deleted",
-        "deleteFailed": "Failed to delete note: {{message}}",
-        "saveFailed": "Failed to save changes",
-        "upgradedToRichNotes": "Your notes have been upgraded to rich notes with markdown formatting.",
-        "loadFailed": "Failed to load note"
-      },
-      "note": {
-        "removeEmoji": "Remove emoji",
-        "titlePlaceholder": "Note title...",
-        "bodyPlaceholder": "Start writing your note...",
-        "edited": "Edited {{date}}",
-        "actions": {
-          "openInNotesWindow": "Open in notes window",
-          "delete": "Delete"
-        },
-        "deleteDialog": {
-          "title": "Delete Note",
-          "description": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone and the note will be permanently removed.",
-          "cancel": "Cancel",
-          "deleting": "Deleting...",
-          "confirm": "Delete Note"
-        }
-      },
-      "upcomingEvents": {
-        "title": "Upcoming events",
-        "takeNotes": "Take notes",
-        "empty": "No upcoming events",
-        "connect": {
-          "title": "Connect your calendar",
-          "description": "Connect your calendar to get started",
-          "button": "Connect calendar"
-        }
       }
     },
     "vocabulary": {
