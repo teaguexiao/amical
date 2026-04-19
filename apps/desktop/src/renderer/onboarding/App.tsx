@@ -6,7 +6,6 @@ import { OnboardingErrorBoundary } from "./components/ErrorBoundary";
 import { useTranslation } from "react-i18next";
 
 // Screens
-import { WelcomeScreen } from "./components/screens/WelcomeScreen";
 import { PermissionsScreen } from "./components/screens/PermissionsScreen";
 import { ModelSelectionScreen } from "./components/screens/ModelSelectionScreen";
 import { CompletionScreen } from "./components/screens/CompletionScreen";
@@ -17,7 +16,6 @@ import {
   ModelType,
   type OnboardingState,
   type OnboardingPreferences,
-  type FeatureInterest,
 } from "../../types/onboarding";
 
 interface PermissionStatus {
@@ -33,7 +31,7 @@ export function App() {
   const { t } = useTranslation();
   // State management
   const [currentScreen, setCurrentScreen] = useState<OnboardingScreen>(
-    OnboardingScreen.Welcome,
+    OnboardingScreen.Permissions,
   );
   const [permissions, setPermissions] = useState<PermissionStatus>({
     microphone: "not-determined",
@@ -62,7 +60,6 @@ export function App() {
 
   // Screen order - can be modified based on feature flags
   const screenOrder: OnboardingScreen[] = [
-    OnboardingScreen.Welcome,
     OnboardingScreen.Permissions,
     OnboardingScreen.ModelSelection,
     OnboardingScreen.Completion,
@@ -79,8 +76,6 @@ export function App() {
 
       // Check feature flags
       if (flags) {
-        if (screen === OnboardingScreen.Welcome && flags.skipWelcome)
-          return false;
         if (screen === OnboardingScreen.ModelSelection && flags.skipModels)
           return false;
       }
@@ -151,16 +146,19 @@ export function App() {
       }
 
       // Resume from last visited screen if available
-      if (state?.lastVisitedScreen) {
+      const activeScreens = getActiveScreens();
+      const resumeScreen = state?.lastVisitedScreen as
+        | OnboardingScreen
+        | undefined;
+      if (resumeScreen && activeScreens.includes(resumeScreen)) {
         // Smart resume: if last screen was permissions and permissions now granted, skip to next
         // Use FRESH permission values, not stale React state
         if (
-          state.lastVisitedScreen === OnboardingScreen.Permissions &&
+          resumeScreen === OnboardingScreen.Permissions &&
           micStatus === "granted" &&
           (accessStatus || platformResult !== "darwin")
         ) {
           // Permissions granted, skip to next screen
-          const activeScreens = getActiveScreens();
           const permissionsIndex = activeScreens.indexOf(
             OnboardingScreen.Permissions,
           );
@@ -172,7 +170,7 @@ export function App() {
           }
         } else {
           // Resume from last visited screen
-          setCurrentScreen(state.lastVisitedScreen as OnboardingScreen);
+          setCurrentScreen(resumeScreen);
         }
       }
     };
@@ -188,13 +186,10 @@ export function App() {
 
   // Save current screen for resume capability (telemetry tracked in backend)
   useEffect(() => {
-    if (currentScreen !== OnboardingScreen.Welcome) {
-      // Don't save Welcome screen, start from there if no progress
-      // Use ref to avoid dependency on savePreferences which changes identity on mutation state
-      savePreferencesRef.current({
-        lastVisitedScreen: currentScreen,
-      });
-    }
+    // Use ref to avoid dependency on savePreferences which changes identity on mutation state
+    savePreferencesRef.current({
+      lastVisitedScreen: currentScreen,
+    });
   }, [currentScreen]);
 
   // Navigation functions (T028 - Back navigation)
@@ -236,11 +231,6 @@ export function App() {
     });
   };
 
-  // Handle feature interests selection (telemetry tracked in backend)
-  const handleFeatureInterests = (interests: FeatureInterest[]) => {
-    handleSaveAndContinue({ featureInterests: interests });
-  };
-
   // Handle model selection (telemetry tracked in backend)
   const handleModelSelection = (
     modelType: ModelType,
@@ -262,7 +252,6 @@ export function App() {
         completedVersion: 1,
         completedAt: new Date().toISOString(),
         skippedScreens: skippedScreensQuery.data || [],
-        featureInterests: preferences.featureInterests,
         selectedModelType: preferences.selectedModelType || ModelType.Cloud,
         modelRecommendation: preferences.modelRecommendation,
       };
@@ -295,19 +284,10 @@ export function App() {
   // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
-      case OnboardingScreen.Welcome:
-        return (
-          <WelcomeScreen
-            onNext={handleFeatureInterests}
-            initialInterests={preferences.featureInterests}
-          />
-        );
-
       case OnboardingScreen.Permissions:
         return (
           <PermissionsScreen
             onNext={navigateNext}
-            onBack={navigateBack}
             permissions={permissions}
             platform={platform}
             checkPermissions={checkPermissions}
@@ -328,7 +308,6 @@ export function App() {
           <CompletionScreen
             onComplete={handleComplete}
             onBack={navigateBack}
-            preferences={preferences}
           />
         );
 

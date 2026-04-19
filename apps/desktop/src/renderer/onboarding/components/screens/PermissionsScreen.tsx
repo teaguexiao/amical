@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 
 interface PermissionsScreenProps {
   onNext: () => void;
-  onBack: () => void;
   permissions: {
     microphone: "granted" | "denied" | "not-determined";
     accessibility: boolean;
@@ -31,7 +30,6 @@ interface PermissionsScreenProps {
  */
 export function PermissionsScreen({
   onNext,
-  onBack,
   permissions,
   platform,
   checkPermissions,
@@ -140,8 +138,8 @@ export function PermissionsScreen({
       subtitle={t("onboarding.permissions.subtitle")}
       footer={
         <NavigationButtons
-          onBack={onBack}
           onNext={onNext}
+          showBack={false}
           disableNext={!allPermissionsGranted}
           nextLabel={
             allPermissionsGranted

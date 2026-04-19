@@ -7,15 +7,11 @@ import { NavigationButtons } from "../shared/NavigationButtons";
 import { OnboardingMicrophoneSelect } from "../shared/OnboardingMicrophoneSelect";
 import { OnboardingShortcutInput } from "../shared/OnboardingShortcutInput";
 import { CheckCircle, Settings, Info } from "lucide-react";
-import { FeatureInterest } from "../../../../types/onboarding";
 import { useTranslation } from "react-i18next";
 
 interface CompletionScreenProps {
   onComplete: () => void;
   onBack: () => void;
-  preferences: {
-    featureInterests?: FeatureInterest[];
-  };
 }
 
 /**
@@ -24,7 +20,6 @@ interface CompletionScreenProps {
 export function CompletionScreen({
   onComplete,
   onBack,
-  preferences,
 }: CompletionScreenProps) {
   const { t } = useTranslation();
   return (

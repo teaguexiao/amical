@@ -12,10 +12,10 @@
 </p>
 
 <p align="center">
-  <a href="https://sayd.ai">Website</a> · <a href="https://sayd.ai/docs">Docs</a> · <a href="https://github.com/teaguexiao/sayd-desktop/issues/new?assignees=&labels=bug&template=bug_report.md">Report a bug</a>
+  <a href="https://sayd.dev">Website</a> · <a href="https://sayd.dev/docs">Docs</a> · <a href="https://github.com/teaguexiao/sayd-desktop/issues/new?assignees=&labels=bug&template=bug_report.md">Report a bug</a>
 </p>
 
-> Sayd is a fork of [amicalhq/amical](https://github.com/amicalhq/amical), rebranded and adapted to use [Sayd Cloud](https://sayd.ai) for transcription. Huge thanks to the Amical team for the original work.
+> Sayd is a fork of [amicalhq/amical](https://github.com/amicalhq/amical), rebranded and adapted to use [Sayd Cloud](https://sayd.dev) for transcription. Huge thanks to the Amical team for the original work.
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ All releases: <https://github.com/teaguexiao/sayd-desktop/releases>
 
 ## Overview
 
-Sayd is an AI-powered dictation app. Powered by [Sayd Cloud](https://sayd.ai) for real-time speech-to-text with built-in LLM text cleaning, Sayd delivers fast and accurate dictation.
+Sayd is an AI-powered dictation app. Powered by [Sayd Cloud](https://sayd.dev) for real-time speech-to-text with built-in LLM text cleaning, Sayd delivers fast and accurate dictation.
 
 Context-aware dictation that adapts to what you're doing: drafting an email, chatting on Discord, writing prompts in your IDE, or messaging friends. Sayd detects the active app and formats your speech accordingly.
 
@@ -55,7 +55,7 @@ Context-aware dictation that adapts to what you're doing: drafting an email, cha
 
 ## Tech Stack
 
-- [Sayd Cloud](https://sayd.ai) — real-time cloud transcription with built-in LLM cleaning
+- [Sayd Cloud](https://sayd.dev) — real-time cloud transcription with built-in LLM cleaning
 - [TypeScript](https://www.typescriptlang.org/)
 - [Electron](https://electronjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)

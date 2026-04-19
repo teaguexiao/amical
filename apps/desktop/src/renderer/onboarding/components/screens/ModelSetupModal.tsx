@@ -31,10 +31,14 @@ export function ModelSetupModal({
   modelType,
   onContinue,
 }: ModelSetupModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiKeyInput, setApiKeyInput] = useState("");
+
+  const signupUrl = i18n.language.toLowerCase().startsWith("zh")
+    ? "https://sayd.dev/zh/signup"
+    : "https://sayd.dev/en/signup";
 
   const validateSaydMutation = api.models.validateSaydConnection.useMutation();
   const setSaydConfigMutation = api.settings.setSaydConfig.useMutation();
@@ -95,7 +99,7 @@ export function ModelSetupModal({
             <p className="text-xs text-muted-foreground">
               {t("onboarding.modelSetup.cloud.getApiKey")}{" "}
               <a
-                href="https://sayd.dev/signup"
+                href={signupUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline inline-flex items-center gap-1"
