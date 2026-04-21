@@ -44,6 +44,8 @@ Sayd is an AI-powered dictation app. Powered by [Sayd Cloud](https://sayd.dev) f
 
 Context-aware dictation that adapts to what you're doing: drafting an email, chatting on Discord, writing prompts in your IDE, or messaging friends. Sayd detects the active app and formats your speech accordingly.
 
+![Sayd Desktop - History](./screenshots/history.png)
+
 ## Features
 
 - Super-fast dictation with AI-enhanced accuracy
